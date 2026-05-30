@@ -87,24 +87,45 @@ func _advance(steps: int) -> void:
 	is_moving = true
 	roll_button.disabled = true
 
-	for i in range(steps):
-		current_idx = (current_idx + 1) % board.BOARD_DATA.size()
-		await _move_player_to(current_idx)
-		_update_ui()
+	var remaining: int = steps
 
-		# Fin de partie : retour sur la case 0 après avoir commencé
+	# ── Carrefour au DÉPART ───────────────────────────────────────────────────
+	# Si la case courante (= case de départ de ce tour) est un carrefour,
+	# proposer le choix de direction AVANT de bouger.
+	# Le déplacement vers la direction choisie consomme 1 pas.
+	var start_forks: Array = board.BOARD_DATA[current_idx].get("forks", [])
+	if start_forks.size() > 0:
+		await _show_fork_popup(start_forks)   # met à jour current_idx
+		remaining = maxi(remaining - 1, 0)
 		if current_idx == 0:
 			_end_game()
 			return
 
-		# Bonus : uniquement sur la case d'arrivée finale du lancer
-		if i == steps - 1 and board.BOARD_DATA[current_idx]["bonus"]:
-			await _show_bonus_popup()
+	# ── Boucle de déplacement ─────────────────────────────────────────────────
+	while remaining > 0:
+		remaining -= 1
+		current_idx = (current_idx + 1) % board.BOARD_DATA.size()
+		await _move_player_to(current_idx)
+		_update_ui()
 
-	# Carrefour : uniquement sur la case d'arrivée finale du lancer
-	var forks: Array = board.BOARD_DATA[current_idx].get("forks", [])
-	if forks.size() > 0:
-		await _show_fork_popup(forks)
+		if current_idx == 0:
+			_end_game()
+			return
+
+		# Carrefour EN TRANSIT : uniquement si des pas restent après ce déplacement.
+		# → La case d'arrivée finale ne déclenche JAMAIS le fork popup.
+		if remaining > 0:
+			var forks: Array = board.BOARD_DATA[current_idx].get("forks", [])
+			if forks.size() > 0:
+				await _show_fork_popup(forks)   # met à jour current_idx
+				remaining = maxi(remaining - 1, 0)
+				if current_idx == 0:
+					_end_game()
+					return
+
+	# ── Bonus : uniquement sur la case d'arrivée finale ───────────────────────
+	if board.BOARD_DATA[current_idx]["bonus"]:
+		await _show_bonus_popup()
 
 	is_moving = false
 	roll_button.disabled = false

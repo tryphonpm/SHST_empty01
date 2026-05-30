@@ -135,14 +135,23 @@ Variables d'état : `current_idx` (case courante), `has_started`, `is_moving`, `
 
 1. `_ready()` : place le joueur sur `BOARD_DATA[0]["pos"]`, exécute `_run_setup()`
 2. Bouton **Lancer le dé** → `randi_range(1, 3)` → `_advance(roll)`, passe `has_started = true`
-3. `_advance()` : boucle sur le nombre de pas — `current_idx = (current_idx + 1) % size`
-   - Si `current_idx == 0` → fin de partie
-   - Sur la dernière case du lancer, vérifie `bonus` puis `forks`
+3. `_advance(steps)` — trois phases :
+   - **Fork départ** : si `BOARD_DATA[current_idx].forks` non vide → popup avant tout mouvement, choix consomme 1 pas
+   - **Boucle** `while remaining > 0` : déplacement pas par pas ; si fork ET `remaining > 0` → popup transit, choix consomme 1 pas ; si `remaining == 0` sur fork → pas de popup (case finale)
+   - **Fin** : `bonus` vérifié sur la case d'arrivée finale
 4. `_show_bonus_popup()` : affiche `UI/BonusPopup` pendant 2 s (auto-fermeture)
 5. `_show_fork_popup(forks)` :
    - Génère dynamiquement un bouton par direction (indices dans `forks`)
    - Attend le signal `fork_chosen(case_idx)` émis au clic
    - Déplace le joueur vers `case_idx`, met à jour `current_idx`
+   - L'appelant applique `remaining = maxi(remaining - 1, 0)` après retour
+
+**Tableau récapitulatif fork :**
+| Moment | Popup ? | Coût |
+|---|---|---|
+| Case de départ du tour | Oui | 1 pas |
+| Transit (`remaining > 0`) | Oui | 1 pas |
+| Case d'arrivée finale (`remaining == 0`) | **Non** | — |
 6. Fin de partie : `current_idx == 0` après `has_started` → message de victoire
 7. Bouton **← Menu** → `get_tree().change_scene_to_file("res://menu.tscn")`
 
@@ -194,6 +203,7 @@ Variables d'état : `current_idx` (case courante), `has_started`, `is_moving`, `
 | 3 | `game.gd` partagé entre tous les boards | DRY — une seule implémentation de la logique de jeu |
 | 4 | `current_idx` à la place d'un compteur `progress` | Nécessaire pour les carrefours (sauts non linéaires dans le parcours) |
 | 5 | Signal `fork_chosen` + `await` pour la popup de carrefour | Pattern Godot 4 idiomatique pour bloquer l'exécution en attendant un choix UI |
+| 5b | `while remaining > 0` à la place de `for i in range(steps)` | Permet d'intercepter un fork à n'importe quelle étape du mouvement, pas seulement la dernière |
 | 6 | Menu de sélection de board comme scène principale | Extensible à N boards sans modifier `project.godot` |
 | 7 | Phase setup via `_get_setup_steps() -> Array[Callable]` | Liste explicite et ordonnée, chaque étape est une fonction indépendante, `await` natif |
 | 8 | `shape_colors` dict + `set_shape_color()` dans `board_XX.gd` | Séparation données statiques (const SHAPES) / état dynamique (var shape_colors) |

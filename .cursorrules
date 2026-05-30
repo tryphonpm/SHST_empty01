@@ -35,11 +35,19 @@ via le script Python `generate_scene.py`. Ne jamais modifier manuellement les fi
 4. Exploiter la propriété dans `game.gd`
 
 ### Carrefours (`forks`)
-- Propriété `"forks": [idx_a, idx_b, ...]` dans `BOARD_DATA`
-- Déclenchée uniquement sur la case d'arrivée finale du lancer (pas en transit)
-- `_show_fork_popup()` génère les boutons dynamiquement et attend `fork_chosen` (signal)
-- Après le choix, le joueur est déplacé vers `current_idx = chosen_idx`
-- Ne pas confondre avec `bonus` : les deux peuvent coexister sur la même case
+Trois moments distincts — chacun avec un comportement différent :
+
+| Moment | Comportement |
+|---|---|
+| **Case de départ du tour** (joueur déjà positionné sur un fork) | Popup avant tout déplacement ; choix consomme 1 pas |
+| **Transit** (case franchie avec `remaining > 0`) | Popup pendant le mouvement ; choix consomme 1 pas |
+| **Case d'arrivée finale** (`remaining == 0`) | Aucun popup ; le joueur s'arrête normalement |
+
+- `_advance()` vérifie le fork sur la case de départ AVANT la boucle `while`
+- Dans la boucle, le fork transit est conditionné à `if remaining > 0`
+- `_show_fork_popup()` génère les boutons, attend `fork_chosen`, déplace vers le choix, met à jour `current_idx`
+- Dans les deux cas (départ + transit) : `remaining = maxi(remaining - 1, 0)`
+- Ne pas confondre avec `bonus` : évalué uniquement à l'arrivée finale
 
 ## Conventions GDScript
 - Typage statique obligatoire : `var x: int`, `func f(a: String) -> void`
