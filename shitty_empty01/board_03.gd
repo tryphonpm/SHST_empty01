@@ -2,13 +2,14 @@
 ## NE PAS ÉDITER MANUELLEMENT.
 extends Node2D
 
+const BOARD_TYPE   := "classic"
+
 const BG_COLOR    := Color("#1a3a5c")
 const SHAPE_COLOR := Color(1, 1, 1, 1)
 const LABEL_COLOR := Color(0, 0, 0, 1)
 const LABEL_SIZE  := 20
 
 ## Couleurs dynamiques par label de case (peuplées en phase de setup).
-## Clé : label String (ex. "3") — Valeur : Color
 var shape_colors: Dictionary = {}
 
 func set_shape_color(label: String, color: Color) -> void:
@@ -16,10 +17,9 @@ func set_shape_color(label: String, color: Color) -> void:
 	queue_redraw()
 
 ## BOARD_DATA — source de vérité de chaque case.
-## Chaque dict est extensible ; ajouter de nouvelles clés dans generate_scene.py.
 const BOARD_DATA := [
 	{"pos": Vector2(80.0, 507.0), "bonus": false, "forks": []},	# 0
-	{"pos": Vector2(113.5, 365.3), "bonus": false, "forks": [3,12]},	# 1
+	{"pos": Vector2(113.5, 365.3), "bonus": false, "forks": []},	# 1
 	{"pos": Vector2(158.3, 264.7), "bonus": false, "forks": []},	# 2
 	{"pos": Vector2(249.2, 193.1), "bonus": false, "forks": []},	# 3
 	{"pos": Vector2(367.8, 180.4), "bonus": false, "forks": []},	# 4
@@ -27,7 +27,7 @@ const BOARD_DATA := [
 	{"pos": Vector2(613.0, 181.2), "bonus": false, "forks": []},	# 6
 	{"pos": Vector2(765.1, 168.5), "bonus": false, "forks": []},	# 7
 	{"pos": Vector2(944.0, 340.0), "bonus": false, "forks": []},	# 8
-	{"pos": Vector2(924.6, 561.4), "bonus": false, "forks": [2, 6, 10]},	# 9
+	{"pos": Vector2(924.6, 561.4), "bonus": false, "forks": []},	# 9
 	{"pos": Vector2(694.3, 591.2), "bonus": false, "forks": []},	# 10
 	{"pos": Vector2(495.4, 470.5), "bonus": false, "forks": []},	# 11
 	{"pos": Vector2(383.6, 599.5), "bonus": false, "forks": []},	# 12

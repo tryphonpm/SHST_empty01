@@ -2,6 +2,7 @@
 
 ## Contexte projet
 Jeu de plateau au tour par tour développé sous Godot 4.4.1 (GDScript).
+Il existe deux paradigmes de board : **classic** et **urban** (voir Architecture).
 Les données de plateau sont générées automatiquement depuis des fichiers Excalidraw (`.md`)
 via le script Python `generate_scene.py`. Ne jamais modifier manuellement les fichiers générés.
 
@@ -11,75 +12,90 @@ via le script Python `generate_scene.py`. Ne jamais modifier manuellement les fi
 - **Dessins** : Obsidian Excalidraw Plugin → `.md` compressé → `visuels/fond_XX.md`
 - **Viewport** : 1024 × 768, `stretch: canvas_items / keep`
 
-## Architecture — règles strictes
+## Architecture — deux paradigmes de board
 
-### Fichiers générés (NE PAS ÉDITER)
+### `board_type: "classic"` — game_02, game_03
+- Labels de cases = entiers (`0`, `1`, …)
+- `BOARD_DATA` = `Array` de `Dictionary` (indexé par position)
+- Parcours circulaire : `(current_idx + 1) % BOARD_DATA.size()`
+- Fin = `current_idx == 0` après `has_started`
+- Forks = `Array[int]` (indices de destination)
+- Script de jeu : `game.gd`
+
+### `board_type: "urban"` — game_04, … ← **nouvelle norme**
+- Labels de cases = chaînes `"X::n"` (ex. `"B::1"`, `"&::2"`, `"@::3"`)
+  - `@` → type `"passage"` | `&` → type `"fork"` | lettre → type `"address"`
+- `BOARD_DATA` = `Dictionary` keyed par label string
+- `PARCOURS: Array[String]` = séquence ordonnée explicite (définie dans `BOARD_CONFIGS`)
+- Navigation : `parcours_idx += 1` → `current_label = PARCOURS[parcours_idx]`
+- Fin = `parcours_idx >= PARCOURS.size()` (atteindre/dépasser le dernier label)
+- Forks = `Array[String]` (labels de destination)
+- Script de jeu : `game_urban.gd`
+
+## Fichiers générés (NE PAS ÉDITER)
 - `shitty_empty01/board_XX.gd` — données + rendu d'un board
 - `shitty_empty01/game_XX.tscn` — scène d'un board
 
-### Fichiers à éditer
+## Fichiers à éditer
 - `generate_scene.py` → `BOARD_CONFIGS` pour les propriétés de cases / boards
-- `shitty_empty01/game.gd` → logique de jeu partagée
+- `shitty_empty01/game.gd` → logique classic
+- `shitty_empty01/game_urban.gd` → logique urban
 - `shitty_empty01/menu.gd` → liste `BOARDS` (à synchroniser avec `BOARD_CONFIGS`)
-- `shitty_empty01/menu.tscn` → structure UI du menu
 
-### Ajouter un board
-1. Ajouter une entrée dans `BOARD_CONFIGS` (generate_scene.py)
-2. Relancer `generate_scene.py`
-3. Ajouter l'entrée correspondante dans `BOARDS` (menu.gd)
+## Ajouter un board urban
+1. Dessiner dans Obsidian/Excalidraw (rectangles + labels `"X::n"`) → sauvegarder `visuels/fond_XX.md`
+2. Ajouter entrée `board_type: "urban"` dans `BOARD_CONFIGS` (avec `start_label`, `parcours`, `label_properties`)
+3. Relancer `$env:PYTHONIOENCODING='utf-8'; python generate_scene.py`
+4. Ajouter l'entrée dans `BOARDS` (`menu.gd`)
 
-### Ajouter une propriété de case
-1. Ajouter la clé + valeur par défaut dans `PROPERTY_DEFAULTS` (generate_scene.py)
-2. Renseigner les cases concernées dans `case_properties` du board
-3. Relancer `generate_scene.py`
-4. Exploiter la propriété dans `game.gd`
+## Ajouter un board classic
+1. Dessiner dans Excalidraw (ellipses numérotées 0–N) → sauvegarder `visuels/fond_XX.md`
+2. Ajouter entrée `board_type: "classic"` dans `BOARD_CONFIGS`
+3. Relancer le script → ajouter dans `BOARDS` (`menu.gd`)
 
-### Carrefours (`forks`)
-Trois moments distincts — chacun avec un comportement différent :
+## Carrefours (`forks`) — comportement identique classic et urban
 
-| Moment | Comportement |
-|---|---|
-| **Case de départ du tour** (joueur déjà positionné sur un fork) | Popup avant tout déplacement ; choix consomme 1 pas |
-| **Transit** (case franchie avec `remaining > 0`) | Popup pendant le mouvement ; choix consomme 1 pas |
-| **Case d'arrivée finale** (`remaining == 0`) | Aucun popup ; le joueur s'arrête normalement |
+| Moment | Comportement | Coût |
+|---|---|---|
+| **Case de départ du tour** (joueur positionné sur un fork) | Résolution AVANT tout mouvement | 1 pas |
+| **Transit** (case franchie avec `remaining > 0`) | Résolution PENDANT le mouvement | 1 pas |
+| **Case d'arrivée finale** (`remaining == 0`) | **Aucun** — le joueur s'arrête | — |
 
 - `_advance()` vérifie le fork sur la case de départ AVANT la boucle `while`
 - Dans la boucle, le fork transit est conditionné à `if remaining > 0`
-- `_show_fork_popup()` génère les boutons, attend `fork_chosen`, déplace vers le choix, met à jour `current_idx`
-- Dans les deux cas (départ + transit) : `remaining = maxi(remaining - 1, 0)`
-- Ne pas confondre avec `bonus` : évalué uniquement à l'arrivée finale
+- Après résolution : `remaining = maxi(remaining - 1, 0)`
+- `bonus` évalué uniquement à l'arrivée finale (`remaining == 0`)
+
+### Résolution fork — Urban (temporaire)
+`_resolve_fork()` dans `game_urban.gd` sélectionne automatiquement le premier label
+de `fork_opts` présent dans `PARCOURS` après `parcours_idx` courant.
+→ Garantit que `"B::13"` est choisi pour game_04 (seul label fork présent dans PARCOURS).
+**TODO** : remplacer par popup interactive (`fork_chosen` signal + `await`).
 
 ## Conventions GDScript
 - Typage statique obligatoire : `var x: int`, `func f(a: String) -> void`
-- `@onready` pour les références de nœuds
+- `@onready` pour les références de nœuds ; jamais `get_node()`
 - Pas de `get_node()` — utiliser `$NomNoeud`
 - Constantes en `SCREAMING_SNAKE_CASE`, variables en `snake_case`
-- Un seul script par scène principale ; la logique métier dans `game.gd`
 - Inférence `:=` uniquement si le type est évident ; sinon typage explicite
   (ex: `var b: Dictionary = BOARDS[i]`, pas `var b := BOARDS[i]`)
+- Logique métier dans `game.gd` / `game_urban.gd` — pas dans les scènes
 
 ## Conventions Python (generate_scene.py)
 - Toutes les modifications de game-design passent par `BOARD_CONFIGS`
-- Ne pas hardcoder de coordonnées dans `generate_scene.py` ; elles viennent d'Excalidraw
-- Utiliser `$env:PYTHONIOENCODING='utf-8'` avant de lancer le script sous PowerShell
-
-## UI / UX
-- `CanvasLayer` pour tout élément UI (labels, boutons, popups)
-- Popups centrées : offset 362–662 (x), 284–484 (y) pour 1024×768
-- Bouton retour menu systématiquement présent dans chaque scène de jeu
+- Ne pas hardcoder de coordonnées : elles viennent d'Excalidraw
+- Board absent (`.md` manquant) = ignoré avec warning, pas d'erreur fatale
+- Utiliser `$env:PYTHONIOENCODING='utf-8'` avant de lancer sous PowerShell
 
 ## Phase de setup
-
-- Le setup s'exécute dans `_ready()` via `await _run_setup()` (bouton bloqué pendant ce temps)
-- Ajouter toute nouvelle étape dans `_get_setup_steps()` uniquement — ne pas appeler directement depuis `_ready()`
-- Les fonctions de setup modifient l'état du board via `board.set_shape_color(label, color)` ou similaire
-- Elles ne doivent pas toucher à `BOARD_DATA` (données de jeu) — uniquement à l'aspect visuel ou à l'état d'affichage
-- Toute fonction de setup peut être `async` (utiliser `await`) si elle a besoin d'attendre
+- S'exécute dans `_ready()` via `await _run_setup()` (bouton désactivé pendant ce temps)
+- Ajouter uniquement dans `_get_setup_steps()` — jamais appeler directement depuis `_ready()`
+- Les fonctions de setup modifient l'aspect visuel (`board.set_shape_color(label, color)`)
+- Ne pas toucher à `BOARD_DATA` en setup — uniquement l'affichage
 
 ## Ce qu'il ne faut pas faire
 - Ne jamais modifier `board_XX.gd` ou `game_XX.tscn` à la main
-- Ne pas dupliquer la logique de jeu dans plusieurs scripts (tout est dans `game.gd`)
-- Ne pas utiliser `Array[Vector2]` pour `BOARD_DATA` ; toujours un tableau de `Dictionary`
-- Ne pas écrire `var b := arr[i]` sur un tableau non typé ; écrire `var b: Dictionary = arr[i]`
-- Ne pas utiliser de compteur linéaire (`progress++`) pour la position — utiliser `current_idx`
-- Ne pas supprimer `visuels/fond_XX.md` ; c'est la source de vérité des boards
+- Ne pas dupliquer la logique entre `game.gd` et `game_urban.gd` (factoriser si nécessaire)
+- Ne pas utiliser un compteur linéaire (`progress++`) — utiliser `current_idx` (classic) ou `parcours_idx` (urban)
+- Ne pas supprimer `visuels/fond_XX.md` — c'est la source de vérité des boards
+- Ne pas écrire `var b := arr[i]` sur un tableau non typé — écrire `var b: Dictionary = arr[i]`

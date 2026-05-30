@@ -2,13 +2,14 @@
 ## NE PAS ÉDITER MANUELLEMENT.
 extends Node2D
 
+const BOARD_TYPE   := "classic"
+
 const BG_COLOR    := Color("#ff1450")
 const SHAPE_COLOR := Color(1, 1, 1, 1)
 const LABEL_COLOR := Color(0, 0, 0, 1)
 const LABEL_SIZE  := 20
 
 ## Couleurs dynamiques par label de case (peuplées en phase de setup).
-## Clé : label String (ex. "3") — Valeur : Color
 var shape_colors: Dictionary = {}
 
 func set_shape_color(label: String, color: Color) -> void:
@@ -16,7 +17,6 @@ func set_shape_color(label: String, color: Color) -> void:
 	queue_redraw()
 
 ## BOARD_DATA — source de vérité de chaque case.
-## Chaque dict est extensible ; ajouter de nouvelles clés dans generate_scene.py.
 const BOARD_DATA := [
 	{"pos": Vector2(109.8, 546.8), "bonus": false, "forks": []},	# 0
 	{"pos": Vector2(145.4, 396.2), "bonus": false, "forks": []},	# 1

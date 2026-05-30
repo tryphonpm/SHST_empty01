@@ -2,8 +2,9 @@ extends Control
 
 ## Liste des boards disponibles — à synchroniser avec BOARD_CONFIGS dans generate_scene.py.
 const BOARDS := [
-	{"name": "Board Classique", "scene": "res://game_02.tscn", "color": Color("#ff1450")},
-	{"name": "Board Nouveau",   "scene": "res://game_03.tscn", "color": Color("#1a3a5c")},
+	{"name": "Board Classique",   "scene": "res://game_02.tscn", "color": Color("#ff1450")},
+	{"name": "Board Nouveau",     "scene": "res://game_03.tscn", "color": Color("#1a3a5c")},
+	{"name": "Quartier Citadin",  "scene": "res://game_04.tscn", "color": Color("#1c2b0e")},
 ]
 
 @onready var board_container: VBoxContainer = $Center/Panel/VBox/BoardContainer
