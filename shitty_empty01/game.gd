@@ -32,7 +32,41 @@ func _ready() -> void:
 	back_button.pressed.connect(_on_back_pressed)
 	bonus_popup.visible = false
 	fork_popup.visible = false
+	roll_button.disabled = true
+	await _run_setup()
+	roll_button.disabled = false
 	_update_ui()
+
+# ── Setup ─────────────────────────────────────────────────────────────────────
+
+## Retourne la liste ordonnée des fonctions de setup à exécuter avant chaque partie.
+## Pour ajouter une nouvelle étape : décommenter ou ajouter une ligne ici.
+func _get_setup_steps() -> Array[Callable]:
+	return [
+		_setup_colored_positions,
+		# _setup_future_feature,
+	]
+
+## Exécute toutes les étapes de setup dans l'ordre.
+func _run_setup() -> void:
+	for step: Callable in _get_setup_steps():
+		await step.call()
+
+## Setup #1 — Colorisation aléatoire de N cases au démarrage de la partie.
+## Modifie uniquement l'aspect visuel ; ne change pas BOARD_DATA.
+## Pour changer le nombre ou la couleur, éditer les constantes ci-dessous.
+func _setup_colored_positions() -> void:
+	const COUNT: int = 3
+	const COLOR: Color = Color(143.0 / 255.0, 11.0 / 255.0, 25.0 / 255.0)  # maroon RGB(143,11,25)
+
+	# Construire la liste des indices candidats (on exclut la case 0 = départ)
+	var candidates: Array[int] = []
+	for i in range(1, board.BOARD_DATA.size()):
+		candidates.append(i)
+	candidates.shuffle()
+
+	for i in range(mini(COUNT, candidates.size())):
+		board.set_shape_color(str(candidates[i]), COLOR)
 
 # ── Entrées ──────────────────────────────────────────────────────────────────
 

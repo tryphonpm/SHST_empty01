@@ -60,6 +60,14 @@ via le script Python `generate_scene.py`. Ne jamais modifier manuellement les fi
 - Popups centrées : offset 362–662 (x), 284–484 (y) pour 1024×768
 - Bouton retour menu systématiquement présent dans chaque scène de jeu
 
+## Phase de setup
+
+- Le setup s'exécute dans `_ready()` via `await _run_setup()` (bouton bloqué pendant ce temps)
+- Ajouter toute nouvelle étape dans `_get_setup_steps()` uniquement — ne pas appeler directement depuis `_ready()`
+- Les fonctions de setup modifient l'état du board via `board.set_shape_color(label, color)` ou similaire
+- Elles ne doivent pas toucher à `BOARD_DATA` (données de jeu) — uniquement à l'aspect visuel ou à l'état d'affichage
+- Toute fonction de setup peut être `async` (utiliser `await`) si elle a besoin d'attendre
+
 ## Ce qu'il ne faut pas faire
 - Ne jamais modifier `board_XX.gd` ou `game_XX.tscn` à la main
 - Ne pas dupliquer la logique de jeu dans plusieurs scripts (tout est dans `game.gd`)

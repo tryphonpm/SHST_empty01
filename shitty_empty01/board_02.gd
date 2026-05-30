@@ -7,6 +7,14 @@ const SHAPE_COLOR := Color(1, 1, 1, 1)
 const LABEL_COLOR := Color(0, 0, 0, 1)
 const LABEL_SIZE  := 20
 
+## Couleurs dynamiques par label de case (peuplées en phase de setup).
+## Clé : label String (ex. "3") — Valeur : Color
+var shape_colors: Dictionary = {}
+
+func set_shape_color(label: String, color: Color) -> void:
+	shape_colors[label] = color
+	queue_redraw()
+
 ## BOARD_DATA — source de vérité de chaque case.
 ## Chaque dict est extensible ; ajouter de nouvelles clés dans generate_scene.py.
 const BOARD_DATA := [
@@ -46,10 +54,11 @@ const SHAPES := [
 func _draw() -> void:
 	draw_rect(Rect2(0, 0, 1024, 768), BG_COLOR)
 	for sh in SHAPES:
+		var color: Color = shape_colors.get(sh.label, SHAPE_COLOR)
 		if sh.type == "ellipse":
-			_draw_ellipse(Vector2(sh.cx, sh.cy), sh.rx, sh.ry)
+			_draw_ellipse(Vector2(sh.cx, sh.cy), sh.rx, sh.ry, color)
 		elif sh.type == "rectangle":
-			draw_rect(Rect2(sh.cx - sh.rx, sh.cy - sh.ry, sh.rx * 2, sh.ry * 2), SHAPE_COLOR)
+			draw_rect(Rect2(sh.cx - sh.rx, sh.cy - sh.ry, sh.rx * 2, sh.ry * 2), color)
 	for sh in SHAPES:
 		draw_string(
 			ThemeDB.fallback_font,
@@ -57,9 +66,10 @@ func _draw() -> void:
 			sh.label, HORIZONTAL_ALIGNMENT_LEFT, -1, LABEL_SIZE, LABEL_COLOR
 		)
 
-func _draw_ellipse(center: Vector2, rx: float, ry: float, steps: int = 48) -> void:
+func _draw_ellipse(center: Vector2, rx: float, ry: float,
+			color: Color = SHAPE_COLOR, steps: int = 48) -> void:
 	var pts: PackedVector2Array
 	for i in range(steps):
 		var a := TAU * i / steps
 		pts.append(center + Vector2(cos(a) * rx, sin(a) * ry))
-	draw_colored_polygon(pts, SHAPE_COLOR)
+	draw_colored_polygon(pts, color)

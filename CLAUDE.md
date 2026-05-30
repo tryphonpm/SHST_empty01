@@ -106,11 +106,34 @@ const BOARD_DATA := [
 
 ---
 
+## Phase de setup (`game.gd`)
+
+Avant chaque partie, `_ready()` appelle `_run_setup()` (bouton désactivé pendant ce temps).
+
+```
+_run_setup()
+   └─ for step in _get_setup_steps(): await step.call()
+         └─ _setup_colored_positions()   ← setup #1 : 3 cases colorisées en marron
+         # └─ _setup_future_feature()    ← setup #2 : décommenter pour activer
+```
+
+### Ajouter une étape de setup
+1. Écrire `func _setup_ma_feature() -> void:` dans `game.gd`
+2. Ajouter `_setup_ma_feature,` dans `_get_setup_steps()`
+3. La fonction peut appeler `board.set_shape_color(label, color)` ou toute autre modification
+
+### `board.set_shape_color(label, color)`
+Peuple `board.shape_colors[label]` et appelle `queue_redraw()`.  
+`_draw()` lit `shape_colors.get(sh.label, SHAPE_COLOR)` pour chaque forme.  
+Clé = label String de la case (ex. `"3"`, `"11"`).
+
+---
+
 ## Logique de jeu (`game.gd`)
 
 Variables d'état : `current_idx` (case courante), `has_started`, `is_moving`, `game_over`.
 
-1. `_ready()` : place le joueur sur `BOARD_DATA[0]["pos"]`
+1. `_ready()` : place le joueur sur `BOARD_DATA[0]["pos"]`, exécute `_run_setup()`
 2. Bouton **Lancer le dé** → `randi_range(1, 3)` → `_advance(roll)`, passe `has_started = true`
 3. `_advance()` : boucle sur le nombre de pas — `current_idx = (current_idx + 1) % size`
    - Si `current_idx == 0` → fin de partie
@@ -172,3 +195,5 @@ Variables d'état : `current_idx` (case courante), `has_started`, `is_moving`, `
 | 4 | `current_idx` à la place d'un compteur `progress` | Nécessaire pour les carrefours (sauts non linéaires dans le parcours) |
 | 5 | Signal `fork_chosen` + `await` pour la popup de carrefour | Pattern Godot 4 idiomatique pour bloquer l'exécution en attendant un choix UI |
 | 6 | Menu de sélection de board comme scène principale | Extensible à N boards sans modifier `project.godot` |
+| 7 | Phase setup via `_get_setup_steps() -> Array[Callable]` | Liste explicite et ordonnée, chaque étape est une fonction indépendante, `await` natif |
+| 8 | `shape_colors` dict + `set_shape_color()` dans `board_XX.gd` | Séparation données statiques (const SHAPES) / état dynamique (var shape_colors) |
