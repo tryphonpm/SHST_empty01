@@ -10,20 +10,20 @@ const LABEL_SIZE  := 20
 ## BOARD_DATA — source de vérité de chaque case.
 ## Chaque dict est extensible ; ajouter de nouvelles clés dans generate_scene.py.
 const BOARD_DATA := [
-	{"pos": Vector2(80.0, 507.0), "bonus": false},	# 0
-	{"pos": Vector2(113.5, 365.3), "bonus": false},	# 1
-	{"pos": Vector2(158.3, 264.7), "bonus": false},	# 2
-	{"pos": Vector2(249.2, 193.1), "bonus": false},	# 3
-	{"pos": Vector2(367.8, 180.4), "bonus": false},	# 4
-	{"pos": Vector2(443.8, 310.1), "bonus": false},	# 5
-	{"pos": Vector2(613.0, 181.2), "bonus": false},	# 6
-	{"pos": Vector2(765.1, 168.5), "bonus": false},	# 7
-	{"pos": Vector2(944.0, 340.0), "bonus": false},	# 8
-	{"pos": Vector2(924.6, 561.4), "bonus": false},	# 9
-	{"pos": Vector2(694.3, 591.2), "bonus": false},	# 10
-	{"pos": Vector2(495.4, 470.5), "bonus": false},	# 11
-	{"pos": Vector2(383.6, 599.5), "bonus": false},	# 12
-	{"pos": Vector2(212.9, 593.5), "bonus": false},	# 13
+	{"pos": Vector2(80.0, 507.0), "bonus": false, "forks": []},	# 0
+	{"pos": Vector2(113.5, 365.3), "bonus": false, "forks": []},	# 1
+	{"pos": Vector2(158.3, 264.7), "bonus": false, "forks": []},	# 2
+	{"pos": Vector2(249.2, 193.1), "bonus": false, "forks": []},	# 3
+	{"pos": Vector2(367.8, 180.4), "bonus": false, "forks": []},	# 4
+	{"pos": Vector2(443.8, 310.1), "bonus": false, "forks": [6, 11]},	# 5
+	{"pos": Vector2(613.0, 181.2), "bonus": false, "forks": []},	# 6
+	{"pos": Vector2(765.1, 168.5), "bonus": false, "forks": []},	# 7
+	{"pos": Vector2(944.0, 340.0), "bonus": false, "forks": []},	# 8
+	{"pos": Vector2(924.6, 561.4), "bonus": false, "forks": []},	# 9
+	{"pos": Vector2(694.3, 591.2), "bonus": false, "forks": []},	# 10
+	{"pos": Vector2(495.4, 470.5), "bonus": false, "forks": []},	# 11
+	{"pos": Vector2(383.6, 599.5), "bonus": false, "forks": []},	# 12
+	{"pos": Vector2(212.9, 593.5), "bonus": false, "forks": []},	# 13
 ]
 
 const SHAPES := [

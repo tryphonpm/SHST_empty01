@@ -1,0 +1,69 @@
+# Cursor Rules — SHITTY STREET (Godot 4.4.1)
+
+## Contexte projet
+Jeu de plateau au tour par tour développé sous Godot 4.4.1 (GDScript).
+Les données de plateau sont générées automatiquement depuis des fichiers Excalidraw (`.md`)
+via le script Python `generate_scene.py`. Ne jamais modifier manuellement les fichiers générés.
+
+## Stack
+- **Moteur** : Godot 4.4.1 — GDScript statiquement typé
+- **Génération** : Python 3.13 + `lzstring` (décompression Excalidraw)
+- **Dessins** : Obsidian Excalidraw Plugin → `.md` compressé → `visuels/fond_XX.md`
+- **Viewport** : 1024 × 768, `stretch: canvas_items / keep`
+
+## Architecture — règles strictes
+
+### Fichiers générés (NE PAS ÉDITER)
+- `shitty_empty01/board_XX.gd` — données + rendu d'un board
+- `shitty_empty01/game_XX.tscn` — scène d'un board
+
+### Fichiers à éditer
+- `generate_scene.py` → `BOARD_CONFIGS` pour les propriétés de cases / boards
+- `shitty_empty01/game.gd` → logique de jeu partagée
+- `shitty_empty01/menu.gd` → liste `BOARDS` (à synchroniser avec `BOARD_CONFIGS`)
+- `shitty_empty01/menu.tscn` → structure UI du menu
+
+### Ajouter un board
+1. Ajouter une entrée dans `BOARD_CONFIGS` (generate_scene.py)
+2. Relancer `generate_scene.py`
+3. Ajouter l'entrée correspondante dans `BOARDS` (menu.gd)
+
+### Ajouter une propriété de case
+1. Ajouter la clé + valeur par défaut dans `PROPERTY_DEFAULTS` (generate_scene.py)
+2. Renseigner les cases concernées dans `case_properties` du board
+3. Relancer `generate_scene.py`
+4. Exploiter la propriété dans `game.gd`
+
+### Carrefours (`forks`)
+- Propriété `"forks": [idx_a, idx_b, ...]` dans `BOARD_DATA`
+- Déclenchée uniquement sur la case d'arrivée finale du lancer (pas en transit)
+- `_show_fork_popup()` génère les boutons dynamiquement et attend `fork_chosen` (signal)
+- Après le choix, le joueur est déplacé vers `current_idx = chosen_idx`
+- Ne pas confondre avec `bonus` : les deux peuvent coexister sur la même case
+
+## Conventions GDScript
+- Typage statique obligatoire : `var x: int`, `func f(a: String) -> void`
+- `@onready` pour les références de nœuds
+- Pas de `get_node()` — utiliser `$NomNoeud`
+- Constantes en `SCREAMING_SNAKE_CASE`, variables en `snake_case`
+- Un seul script par scène principale ; la logique métier dans `game.gd`
+- Inférence `:=` uniquement si le type est évident ; sinon typage explicite
+  (ex: `var b: Dictionary = BOARDS[i]`, pas `var b := BOARDS[i]`)
+
+## Conventions Python (generate_scene.py)
+- Toutes les modifications de game-design passent par `BOARD_CONFIGS`
+- Ne pas hardcoder de coordonnées dans `generate_scene.py` ; elles viennent d'Excalidraw
+- Utiliser `$env:PYTHONIOENCODING='utf-8'` avant de lancer le script sous PowerShell
+
+## UI / UX
+- `CanvasLayer` pour tout élément UI (labels, boutons, popups)
+- Popups centrées : offset 362–662 (x), 284–484 (y) pour 1024×768
+- Bouton retour menu systématiquement présent dans chaque scène de jeu
+
+## Ce qu'il ne faut pas faire
+- Ne jamais modifier `board_XX.gd` ou `game_XX.tscn` à la main
+- Ne pas dupliquer la logique de jeu dans plusieurs scripts (tout est dans `game.gd`)
+- Ne pas utiliser `Array[Vector2]` pour `BOARD_DATA` ; toujours un tableau de `Dictionary`
+- Ne pas écrire `var b := arr[i]` sur un tableau non typé ; écrire `var b: Dictionary = arr[i]`
+- Ne pas utiliser de compteur linéaire (`progress++`) pour la position — utiliser `current_idx`
+- Ne pas supprimer `visuels/fond_XX.md` ; c'est la source de vérité des boards

@@ -16,7 +16,9 @@ MARGIN = 80
 # Valeurs par défaut pour toutes les propriétés de case connues
 PROPERTY_DEFAULTS: dict = {
     "bonus": False,
-    # ajouter ici les futures propriétés
+    # forks : liste vide = case linéaire.
+    # liste non vide = carrefour : le joueur choisit sa prochaine case parmi ces indices.
+    "forks": [],
 }
 
 BOARD_CONFIGS = [
@@ -38,7 +40,7 @@ BOARD_CONFIGS = [
         "md_file": "fond_03.md",
         "bg_color": "#1a3a5c",
         "case_properties": {
-            # à compléter selon les règles du board 03
+            5: {"forks": [6, 11]},   # carrefour : vers circuit extérieur (6) ou intérieur (11)
         },
     },
 ]
@@ -136,7 +138,10 @@ def generate_board_gd(cfg: dict, shapes: list, pos_dict: dict,
         props = dict(PROPERTY_DEFAULTS)
         props.update(case_props.get(i, {}))
         bonus_str = "true" if props["bonus"] else "false"
-        lines.append(f'\t{{"pos": Vector2({gx}, {gy}), "bonus": {bonus_str}}},\t# {i}')
+        forks_str = str(props["forks"])  # [6, 11] en Python → "[6, 11]" valide en GDScript
+        lines.append(
+            f'\t{{"pos": Vector2({gx}, {gy}), "bonus": {bonus_str}, "forks": {forks_str}}},\t# {i}'
+        )
     lines += [
         "]",
         "",
@@ -253,99 +258,35 @@ theme_override_font_sizes/font_size = 64
 text = "BONUS"
 horizontal_alignment = 1
 vertical_alignment = 1
-"""
 
+[node name="ForkPopup" type="Panel" parent="UI"]
+visible = false
+offset_left = 312.0
+offset_top = 254.0
+offset_right = 712.0
+offset_bottom = 514.0
 
-# ═══════════════════════════════════════════════════════════════
-#  Générateur game.gd (partagé, une seule fois)
-# ═══════════════════════════════════════════════════════════════
+[node name="VBox" type="VBoxContainer" parent="UI/ForkPopup"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+theme_override_constants/separation = 20
 
-GAME_GD = """\
-## Logique de jeu partagée entre tous les boards.
-## Chaque scène game_XX.tscn utilise ce script.
-extends Node2D
+[node name="Title" type="Label" parent="UI/ForkPopup/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "Choisissez votre direction :"
+horizontal_alignment = 1
 
-const BONUS_DISPLAY_DURATION: float = 2.0
-const MENU_SCENE: String = "res://menu.tscn"
-
-var steps_to_finish: int = 0
-var progress: int = 0
-var is_moving: bool = false
-var game_over: bool = false
-
-@onready var board: Node2D       = $Board
-@onready var player: Node2D      = $Player
-@onready var info_label: Label   = $UI/InfoLabel
-@onready var dice_label: Label   = $UI/DiceLabel
-@onready var roll_button: Button = $UI/RollButton
-@onready var back_button: Button = $UI/BackButton
-@onready var bonus_popup: Panel  = $UI/BonusPopup
-
-func _ready() -> void:
-\trandomize()
-\tsteps_to_finish = board.BOARD_DATA.size()
-\tplayer.position = board.BOARD_DATA[0]["pos"]
-\troll_button.pressed.connect(_on_roll_pressed)
-\tback_button.pressed.connect(_on_back_pressed)
-\tbonus_popup.visible = false
-\t_update_ui()
-
-func _on_roll_pressed() -> void:
-\tif is_moving or game_over:
-\t\treturn
-\tvar roll: int = randi_range(1, 3)
-\tdice_label.text = "Dé : %d" % roll
-\t_advance(roll)
-
-func _on_back_pressed() -> void:
-\tget_tree().change_scene_to_file(MENU_SCENE)
-
-func _advance(steps: int) -> void:
-\tis_moving = true
-\troll_button.disabled = true
-
-\tfor i in range(steps):
-\t\tif progress >= steps_to_finish:
-\t\t\tbreak
-\t\tprogress += 1
-\t\tvar idx: int = progress % board.BOARD_DATA.size()
-\t\tvar target: Vector2 = board.BOARD_DATA[idx]["pos"]
-
-\t\tvar tween: Tween = create_tween()
-\t\ttween.tween_property(player, "position", target, 0.25) \\
-\t\t\t.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-\t\tawait tween.finished
-
-\t\t_update_ui()
-
-\t\t# Popup bonus uniquement sur la case finale du lancer
-\t\tif i == steps - 1 and board.BOARD_DATA[idx]["bonus"]:
-\t\t\tawait _show_bonus_popup()
-
-\tis_moving = false
-
-\tif progress >= steps_to_finish:
-\t\t_end_game()
-\telse:
-\t\troll_button.disabled = false
-
-func _show_bonus_popup() -> void:
-\tbonus_popup.visible = true
-\tawait get_tree().create_timer(BONUS_DISPLAY_DURATION).timeout
-\tbonus_popup.visible = false
-
-func _end_game() -> void:
-\tgame_over = true
-\troll_button.disabled = true
-\tinfo_label.text = "Bravo ! Tu as rejoint le départ (0).\\nPartie terminée."
-
-func _update_ui() -> void:
-\tif game_over:
-\t\treturn
-\tvar current_case: int = progress % board.BOARD_DATA.size()
-\tif progress >= steps_to_finish:
-\t\tcurrent_case = 0
-\tinfo_label.text = "Case actuelle : %d\\nLance le dé (1 à 3) pour avancer." % current_case
+[node name="ButtonContainer" type="VBoxContainer" parent="UI/ForkPopup/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
 """
 
 
@@ -374,8 +315,14 @@ for cfg in BOARD_CONFIGS:
 
     for i in sorted(pos_dict.keys()):
         gx, gy = pos_dict[i][:2]
-        bonus = cfg['case_properties'].get(i, {}).get('bonus', False)
-        print(f"  [{i:>2}]  cx={gx:7}  cy={gy:7}  bonus={bonus}")
+        cprops = cfg['case_properties'].get(i, {})
+        bonus = cprops.get('bonus', False)
+        forks = cprops.get('forks', [])
+        info = []
+        if bonus: info.append("bonus")
+        if forks: info.append(f"forks→{forks}")
+        tag = ("  [" + ", ".join(info) + "]") if info else ""
+        print(f"  [{i:>2}]  cx={gx:7}  cy={gy:7}{tag}")
 
     # board_XX.gd
     board_gd = generate_board_gd(cfg, shapes, pos_dict, scale, offset_x, offset_y)
@@ -393,12 +340,6 @@ for cfg in BOARD_CONFIGS:
     print(f"  → {tscn_path}")
 
     board_registry.append((cfg['id'], cfg['name'], f"res://game_{cfg['id']}.tscn"))
-
-# game.gd (partagé)
-game_gd_path = os.path.join(GODOT_DIR, 'game.gd')
-with open(game_gd_path, 'w', encoding='utf-8') as f:
-    f.write(GAME_GD)
-print(f"\n  → {game_gd_path}")
 
 # Exporter la liste des boards pour menu.gd (affichage)
 print("\n══ Boards disponibles pour le menu ══")
