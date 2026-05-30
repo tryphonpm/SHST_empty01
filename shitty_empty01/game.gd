@@ -44,6 +44,7 @@ func _ready() -> void:
 func _get_setup_steps() -> Array[Callable]:
 	return [
 		_setup_colored_positions,
+		_setup_fork_markers,
 		# _setup_future_feature,
 	]
 
@@ -67,6 +68,49 @@ func _setup_colored_positions() -> void:
 
 	for i in range(mini(COUNT, candidates.size())):
 		board.set_shape_color(str(candidates[i]), COLOR)
+
+## Setup #2 — Marqueur SVG "passage piéton" sur chaque case carrefour (forks non vide).
+## Le marqueur est positionné en coin supérieur-droit du shape, taille < cases du board.
+func _setup_fork_markers() -> void:
+	const SVG_PATH: String = "res://visuels/passage_pieton.svg"
+	const TARGET_SIZE: float = 36.0   # largeur cible px — adapter si les cases changent de taille
+
+	var texture: Texture2D = load(SVG_PATH)
+	if not texture:
+		push_warning("_setup_fork_markers : %s introuvable" % SVG_PATH)
+		return
+
+	# Calcul du facteur d'échelle une seule fois (SVG viewBox = 100×100)
+	var tex_size: Vector2 = texture.get_size()
+	var scale_factor: float = TARGET_SIZE / maxf(tex_size.x, tex_size.y)
+
+	# Index label (String) → shape dict pour récupérer rx par case
+	var shape_by_label: Dictionary = {}
+	var shapes: Array = board.get("SHAPES") as Array
+	if shapes:
+		for sh: Dictionary in shapes:
+			shape_by_label[sh["label"]] = sh
+
+	# Nœud conteneur pour regrouper les marqueurs (suppression / masquage futurs plus simples)
+	var markers_root := Node2D.new()
+	markers_root.name = "ForkMarkers"
+	board.add_child(markers_root)
+
+	for i: int in range(board.BOARD_DATA.size()):
+		var data: Dictionary = board.BOARD_DATA[i]
+		if (data.get("forks", []) as Array).is_empty():
+			continue
+
+		var label: String = str(i)
+		var pos: Vector2 = data["pos"]
+		var rx: float = shape_by_label.get(label, {"rx": 34.0})["rx"]
+
+		var sprite := Sprite2D.new()
+		sprite.texture = texture
+		sprite.scale = Vector2.ONE * scale_factor
+		# Coin supérieur-droit : à l'extérieur du bord de l'ellipse + demi-taille du marqueur
+		sprite.position = pos + Vector2(rx + TARGET_SIZE * 0.5 + 2.0, -(TARGET_SIZE * 0.5 + 2.0))
+		markers_root.add_child(sprite)
 
 # ── Entrées ──────────────────────────────────────────────────────────────────
 

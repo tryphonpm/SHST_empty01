@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <!-- Fond bleu du panneau -->
+  <rect x="5" y="5" width="90" height="90" rx="8" fill="#00538b" />
+  
+  <!-- Bordure intérieure blanche -->
+  <rect x="9" y="9" width="82" height="82" rx="5" fill="none" stroke="#ffffff" stroke-width="3" />
+  
+  <!-- Triangle blanc intérieur -->
+  <polygon points="50,15 15,78 85,78" fill="#ffffff" />
+  
+  <!-- Les bandes du passage piéton (noir) -->
+  <polygon points="32,74 36,74 28,64 24,64" fill="#000000" />
+  <polygon points="41,74 45,74 39,64 35,64" fill="#000000" />
+  <polygon points="50,74 54,74 50,64 46,64" fill="#000000" />
+  <polygon points="59,74 63,74 61,64 57,64" fill="#000000" />
+  <polygon points="68,74 72,74 72,64 68,64" fill="#000000" />
+  
+  <!-- Silhouette du piéton -->
+  <!-- Tête -->
+  <circle cx="56" cy="30" r="4.5" fill="#000000" />
+  <!-- Corps / Tronc -->
+  <path d="M53,36 C50,37 46,41 43,46 L46,48 C48,44 51,41 54,40 L55,54 L47,65 L51,67 L57,56 L61,65 L65,63 L59,51 L58,38 C60,39 62,41 64,44 L67,41 C64,37 60,35 55,35 C54,35 53,36 53,36 Z" fill="#000000" />
+</svg>
