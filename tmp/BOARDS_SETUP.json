@@ -1,0 +1,92 @@
+{
+    "board_04": {
+        "name": "Quartier Citadin",
+        "scene": "res://game_04.tscn",
+        "color": "#1c2b0e",
+        "parcours": [
+            "B::1", "B::3", "B::5", "B::7", "B::9", "B::11",
+            "&::2", "@::2", "&::3",
+            "B::13", "B::15", "B::17", "B::19"
+        ],
+        "streets": {
+            "A": {
+                "name": "Alice",
+                "oden_sidewalk": {
+                    "A::2":  {"type": "address", "pos": [589.6, 684.9]},
+                    "A::4":  {"type": "address", "pos": [589.6, 629.5]},
+                    "A::6":  {"type": "address", "pos": [589.6, 602.3]},
+                    "A::8":  {"type": "address", "pos": [589.6, 568.7]},
+                    "A::10": {"type": "address", "pos": [589.6, 537.9]},
+                    "A::12": {"type": "address", "pos": [589.6, 508.1]},
+                    "A::14": {"type": "address", "pos": [589.6, 481.0]},
+                    "&::4":  {"type": "fork",    "pos": [591.4, 442.1], "forks": []},
+                    "@::3":  {"type": "passage", "pos": [592.9, 402.2]}
+                },
+                "even_sidewalk": {
+                    "&::2":  {"type": "fork",    "pos": [478.1, 357.3], "forks": ["C::1", "B::13", "A::13"]},
+                    "A::1":  {"type": "address", "pos": [478.4, 688.0]},
+                    "A::3":  {"type": "address", "pos": [478.4, 660.8]},
+                    "A::5":  {"type": "address", "pos": [478.4, 632.6]},
+                    "A::7":  {"type": "address", "pos": [478.4, 605.6]},
+                    "A::9":  {"type": "address", "pos": [478.4, 571.8]},
+                    "A::11": {"type": "address", "pos": [478.4, 544.7]},
+                    "A::13": {"type": "address", "pos": [478.4, 484.0]},
+                    "&::1":  {"type": "fork",    "pos": [478.5, 441.7], "forks": ["C::1", "B::13", "A::13"]},
+                    "@::1":  {"type": "passage", "pos": [478.2, 400.0]}
+                }
+            },
+            "B": {
+                "name": "Barouch",
+                "even_sidewalk": {
+                    "B::2":  {"type": "address", "pos": [240.7, 439.6]},
+                    "B::4":  {"type": "address", "pos": [274.6, 439.6]},
+                    "B::6":  {"type": "address", "pos": [315.6, 439.6]},
+                    "B::8":  {"type": "address", "pos": [352.9, 439.6]},
+                    "B::10": {"type": "address", "pos": [395.9, 439.6]},
+                    "B::12": {"type": "address", "pos": [447.1, 440.1]},
+                    "&::1":  {"type": "fork",    "pos": [478.5, 441.7], "forks": ["C::1", "B::13", "A::13"]},
+                    "@::4":  {"type": "passage", "pos": [534.9, 442.7]},
+                    "&::4":  {"type": "fork",    "pos": [591.4, 442.1], "forks": []},
+                    "B::14": {"type": "address", "pos": [623.2, 440.9]},
+                    "B::16": {"type": "address", "pos": [678.8, 440.9]},
+                    "B::18": {"type": "address", "pos": [721.5, 440.9]},
+                    "B::20": {"type": "address", "pos": [779.9, 440.9]}
+                },
+                "odd_sidewalk": {
+                    "B::1":  {"type": "address", "pos": [239.8, 358.6]},
+                    "B::3":  {"type": "address", "pos": [273.6, 358.6]},
+                    "B::5":  {"type": "address", "pos": [314.6, 358.6]},
+                    "B::7":  {"type": "address", "pos": [351.9, 358.6]},
+                    "B::9":  {"type": "address", "pos": [392.9, 358.6]},
+                    "B::11": {"type": "address", "pos": [446.9, 358.6]},
+                    "&::2": {"type": "fork",    "pos": [478.1, 357.3], "forks": ["C::1", "B::13", "A::13"]},
+                    "@::2":  {"type": "passage", "pos": [531.6, 362.3]},
+                    "&::3":  {"type": "fork",    "pos": [583.1, 361.3], "forks": ["C::1", "B::13", "A::13"]},
+                    "B::13": {"type": "address", "pos": [616.1, 363.3]},
+                    "B::15": {"type": "address", "pos": [696.3, 363.3]},
+                    "B::17": {"type": "address", "pos": [736.0, 363.4]},
+                    "B::19": {"type": "address", "pos": [784.2, 363.4]}
+                }
+            },
+            "C": {
+                "name": "Caulaincourt",
+                "even_sidewalk": {
+                    "&::3":  {"type": "fork",    "pos": [583.1, 361.3], "forks": ["C::1", "B::13", "A::13"]},
+                    "C::2":  {"type": "address", "pos": [588.4, 334.8]},
+                    "C::4":  {"type": "address", "pos": [596.5, 308.9]},
+                    "C::6":  {"type": "address", "pos": [615.0, 248.8]},
+                    "C::8":  {"type": "address", "pos": [630.3, 200.4]},
+                    "C::10": {"type": "address", "pos": [651.5, 124.0]}
+                },
+                "oden_sidewalk": {
+                    "&::2":  {"type": "fork",    "pos": [478.1, 357.3], "forks": ["C::1", "B::13", "A::13"]},
+                    "C::1":  {"type": "address", "pos": [491.2, 330.8]},
+                    "C::3":  {"type": "address", "pos": [499.3, 305.4]},
+                    "C::5":  {"type": "address", "pos": [507.8, 278.5]},
+                    "C::7":  {"type": "address", "pos": [523.5, 228.4]},
+                    "C::9":  {"type": "address", "pos": [572.5,  80.0]}
+                }
+            }
+        }
+    }
+}

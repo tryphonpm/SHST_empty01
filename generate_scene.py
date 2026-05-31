@@ -80,6 +80,11 @@ BOARD_CONFIGS = [
             "&::2": {"forks": ["C::1", "B::13", "A::13"]},
             "&::3": {"forks": ["C::1", "B::13", "A::13"]},
         },
+        # Source unifiée des données board (rues, sidewalks, positions, forks).
+        # Remplace les anciens streets_json et BOARD_DATA générés depuis Excalidraw.
+        "boards_setup_json": "tmp/BOARDS_SETUP.json",
+        # Données des joueurs : état initial, lu depuis le JSON.
+        "players_json": "tmp/players.json",
     },
 ]
 
@@ -345,15 +350,78 @@ def generate_board_gd_classic(cfg: dict, shapes: list, pos_dict: dict,
 #  Générateur board_XX.gd — Urban
 # ═══════════════════════════════════════════════════════════════
 
+def _to_gd(value, indent: int = 0) -> str:
+    """Convertit récursivement une valeur Python (dict/list/str/int/float/bool)
+    en littéral GDScript indenté."""
+    tab = '\t' * indent
+    inner = '\t' * (indent + 1)
+    if isinstance(value, bool):
+        return 'true' if value else 'false'
+    if isinstance(value, str):
+        return f'"{value}"'
+    if isinstance(value, (int, float)):
+        return str(value)
+    if isinstance(value, list):
+        if not value:
+            return '[]'
+        items = ', '.join(_to_gd(v) for v in value)
+        return f'[{items}]'
+    if isinstance(value, dict):
+        if not value:
+            return '{}'
+        lines = ['{']
+        for k, v in value.items():
+            lines.append(f'{inner}"{k}": {_to_gd(v, indent + 1)},')
+        lines.append(tab + '}')
+        return '\n'.join(lines)
+    return str(value)
+
+
+def _to_gd_board_setup(value, indent: int = 0, _key: str = '') -> str:
+    """Comme _to_gd, mais convertit spécialement les positions :
+    - "pos": [x, y]  →  Vector2(x, y)
+    - "pos": null    →  Vector2.ZERO
+    """
+    tab = '\t' * indent
+    inner = '\t' * (indent + 1)
+    if _key == 'pos':
+        if value is None:
+            return 'Vector2.ZERO'
+        if isinstance(value, list) and len(value) == 2:
+            return f'Vector2({value[0]}, {value[1]})'
+    if isinstance(value, bool):
+        return 'true' if value else 'false'
+    if value is None:
+        return '""'
+    if isinstance(value, str):
+        return f'"{value}"'
+    if isinstance(value, (int, float)):
+        return str(value)
+    if isinstance(value, list):
+        if not value:
+            return '[]'
+        items = ', '.join(_to_gd_board_setup(v) for v in value)
+        return f'[{items}]'
+    if isinstance(value, dict):
+        if not value:
+            return '{}'
+        lines = ['{']
+        for k, v in value.items():
+            lines.append(f'{inner}"{k}": {_to_gd_board_setup(v, indent + 1, _key=k)},')
+        lines.append(tab + '}')
+        return '\n'.join(lines)
+    return str(value)
+
+
 def generate_board_gd_urban(cfg: dict, shapes: list, label_dict: dict,
                              scale: float, offset_x: float, offset_y: float,
-                             bg_rect: tuple | None = None) -> str:
+                             bg_rect: tuple | None = None,
+                             board_setup_data: dict | None = None) -> str:
     bid         = cfg['id']
     bg          = cfg['bg_color']
     bg_image    = cfg.get('bg_image', '')
     start_label = cfg['start_label']
     parcours    = cfg['parcours']
-    label_props = cfg.get('label_properties', {})
 
     # Bloc image de fond (optionnel)
     if bg_image and bg_rect is not None:
@@ -403,50 +471,37 @@ def generate_board_gd_urban(cfg: dict, shapes: list, label_dict: dict,
         "\tshape_colors[label] = color",
         "\tqueue_redraw()",
         "",
-        "## BOARD_DATA — dictionnaire keyed par label string ('B::1', '&::2', '@::3').",
-        "## type  : 'address' | 'fork' | 'passage'",
-        "## street : lettre du label (ex. 'B', '&', '@')",
-        "## num    : nombre du label",
-        "const BOARD_DATA: Dictionary = {",
-    ]
-
-    # Trier les labels : d'abord par rue, puis par numéro
-    def label_sort_key(lbl):
-        etype, street, num = parse_urban_label(lbl)
-        return (street, num)
-
-    for label in sorted(label_dict.keys(), key=label_sort_key):
-        info = label_dict[label]
-        gx, gy = info['gx'], info['gy']
-        etype  = info['etype']
-        street = info['street']
-        num    = info['num']
-
-        props = {"bonus": False, "forks": []}
-        props.update(label_props.get(label, {}))
-        bonus_str = "true" if props["bonus"] else "false"
-        forks_gd  = '[' + ', '.join(f'"{f}"' for f in props["forks"]) + ']'
-
-        lines.append(
-            f'\t"{label}": {{'
-            f'"pos": Vector2({gx}, {gy}), '
-            f'"type": "{etype}", "street": "{street}", "num": {num}, '
-            f'"bonus": {bonus_str}, "forks": {forks_gd}'
-            f'}},'
-        )
-
-    lines += [
-        "}",
-        "",
         "## PARCOURS — séquence ordonnée des labels définissant le chemin à parcourir.",
-        "## Défini dans generate_scene.py > BOARD_CONFIGS (décision game-design).",
         "## Le jeu se termine quand le joueur atteint ou dépasse le dernier label.",
         "const PARCOURS: Array[String] = [",
     ]
     for lbl in parcours:
         lines.append(f'\t"{lbl}",')
+    lines.append("]")
+
+    # Bloc BOARD_SETUP — source unifiée (streets, sidewalks, positions, forks)
+    if board_setup_data:
+        lines += [
+            "",
+            "## BOARD_SETUP — source unifiée des données du board.",
+            "## Générée depuis tmp/BOARDS_SETUP.json (boards_setup_json dans BOARD_CONFIGS).",
+            "## Remplace les anciennes const BOARD_DATA et STREETS.",
+            "## Structure : streets → rue → sidewalk → label → {type, pos, forks?}",
+            f"const BOARD_SETUP: Dictionary = {_to_gd_board_setup(board_setup_data)}",
+        ]
+
+    # Bloc PLAYERS (optionnel — présent si players_data fourni)
+    players_data = cfg.get('_players_data')
+    if players_data:
+        lines += [
+            "",
+            "## PLAYERS — état initial des joueurs (position de départ, domicile, couleur).",
+            "## Source : players_json défini dans BOARD_CONFIGS.",
+            "## game_urban.gd en fait une copie mutable (var players) mise à jour à chaque tour.",
+            f"const PLAYERS: Dictionary = {_to_gd(players_data)}",
+        ]
+
     lines += [
-        "]",
         "",
         "const SHAPES := [",
     ]
@@ -492,10 +547,20 @@ def generate_tscn(cfg: dict, pos0x: float, pos0y: float,
         else "Case actuelle : 0\\nLance le dé (1 à 3) pour avancer."
     )
 
-    return f"""[gd_scene load_steps=3 format=3]
+    player_script_entry = (
+        '\n[ext_resource type="Script" path="res://player.gd" id="3_player"]'
+        if board_type == 'urban' else ''
+    )
+    player_script_line = (
+        '\nscript = ExtResource("3_player")'
+        if board_type == 'urban' else ''
+    )
+    load_steps = 4 if board_type == 'urban' else 3
+
+    return f"""[gd_scene load_steps={load_steps} format=3]
 
 [ext_resource type="Script" path="res://board_{bid}.gd" id="1_board"]
-[ext_resource type="Script" path="res://{game_script}" id="2_game"]
+[ext_resource type="Script" path="res://{game_script}" id="2_game"]{player_script_entry}
 
 [node name="Game{bid}" type="Node2D"]
 script = ExtResource("2_game")
@@ -504,7 +569,7 @@ script = ExtResource("2_game")
 script = ExtResource("1_board")
 
 [node name="Player" type="Node2D" parent="."]
-position = Vector2({pos0x}, {pos0y})
+position = Vector2({pos0x}, {pos0y}){player_script_line}
 
 [node name="Triangle" type="Polygon2D" parent="Player"]
 color = Color(0.2, 0.41, 1, 1)
@@ -685,8 +750,40 @@ for cfg in BOARD_CONFIGS:
             png_path = os.path.join(GODOT_DIR, 'visuels', bg_image)
             bg_rect  = compute_bg_rect(png_path, data, scale, offset_x, offset_y)
 
+        PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+        # Chargement BOARDS_SETUP.json — source unifiée streets/sidewalks/positions
+        board_setup_data = None
+        boards_setup_rel = cfg.get('boards_setup_json', '')
+        if boards_setup_rel:
+            boards_setup_path = os.path.join(PROJECT_DIR, boards_setup_rel)
+            if os.path.exists(boards_setup_path):
+                with open(boards_setup_path, 'r', encoding='utf-8') as f:
+                    all_setups = json.load(f)
+                board_key = f"board_{cfg['id']}"
+                board_setup_data = all_setups.get(board_key)
+                if board_setup_data:
+                    print(f"  [board_setup] Chargé : {boards_setup_path} ({board_key})")
+                else:
+                    print(f"  [board_setup] Clé '{board_key}' introuvable dans {boards_setup_path}")
+            else:
+                print(f"  [board_setup] Fichier introuvable : {boards_setup_path}")
+
+        # Chargement des données joueurs (players_json, optionnel)
+        players_data = None
+        players_json_rel = cfg.get('players_json', '')
+        if players_json_rel:
+            players_json_path = os.path.join(PROJECT_DIR, players_json_rel)
+            if os.path.exists(players_json_path):
+                with open(players_json_path, 'r', encoding='utf-8') as f:
+                    players_data = json.load(f)
+                print(f"  [players] Chargé : {players_json_path}")
+            else:
+                print(f"  [players] Fichier introuvable : {players_json_path}")
+        cfg['_players_data'] = players_data
+
         board_gd   = generate_board_gd_urban(cfg, shapes, label_dict, scale, offset_x, offset_y,
-                                              bg_rect=bg_rect)
+                                              bg_rect=bg_rect, board_setup_data=board_setup_data)
         board_path = os.path.join(GODOT_DIR, f"board_{cfg['id']}.gd")
         with open(board_path, 'w', encoding='utf-8') as f:
             f.write(board_gd)

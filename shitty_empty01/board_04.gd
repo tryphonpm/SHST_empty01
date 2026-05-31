@@ -24,67 +24,7 @@ func set_shape_color(label: String, color: Color) -> void:
 	shape_colors[label] = color
 	queue_redraw()
 
-## BOARD_DATA — dictionnaire keyed par label string ('B::1', '&::2', '@::3').
-## type  : 'address' | 'fork' | 'passage'
-## street : lettre du label (ex. 'B', '&', '@')
-## num    : nombre du label
-const BOARD_DATA: Dictionary = {
-	"&::1": {"pos": Vector2(478.5, 441.7), "type": "fork", "street": "&", "num": 1, "bonus": false, "forks": ["A::13", "B::12", "@::4"]},
-	"&::2": {"pos": Vector2(478.1, 357.3), "type": "fork", "street": "&", "num": 2, "bonus": false, "forks": ["C::1", "@::1", "@::2"]},
-	"&::3": {"pos": Vector2(583.1, 361.3), "type": "fork", "street": "&", "num": 3, "bonus": false, "forks": ["C::2", "B::13", "@::3"]},
-	"&::4": {"pos": Vector2(591.4, 442.1), "type": "fork", "street": "&", "num": 4, "bonus": false, "forks": []},
-	"@::1": {"pos": Vector2(478.2, 400.0), "type": "passage", "street": "@", "num": 1, "bonus": false, "forks": []},
-	"@::2": {"pos": Vector2(531.6, 362.3), "type": "passage", "street": "@", "num": 2, "bonus": false, "forks": []},
-	"@::3": {"pos": Vector2(592.9, 402.2), "type": "passage", "street": "@", "num": 3, "bonus": false, "forks": []},
-	"@::4": {"pos": Vector2(534.9, 442.7), "type": "passage", "street": "@", "num": 4, "bonus": false, "forks": []},
-	"A::1": {"pos": Vector2(478.4, 688.0), "type": "address", "street": "A", "num": 1, "bonus": false, "forks": []},
-	"A::2": {"pos": Vector2(589.6, 684.9), "type": "address", "street": "A", "num": 2, "bonus": false, "forks": []},
-	"A::3": {"pos": Vector2(478.4, 660.8), "type": "address", "street": "A", "num": 3, "bonus": false, "forks": []},
-	"A::4": {"pos": Vector2(589.6, 629.5), "type": "address", "street": "A", "num": 4, "bonus": false, "forks": []},
-	"A::5": {"pos": Vector2(478.4, 632.6), "type": "address", "street": "A", "num": 5, "bonus": false, "forks": []},
-	"A::6": {"pos": Vector2(589.6, 602.3), "type": "address", "street": "A", "num": 6, "bonus": false, "forks": []},
-	"A::7": {"pos": Vector2(478.4, 605.6), "type": "address", "street": "A", "num": 7, "bonus": false, "forks": []},
-	"A::8": {"pos": Vector2(589.6, 568.7), "type": "address", "street": "A", "num": 8, "bonus": false, "forks": []},
-	"A::9": {"pos": Vector2(478.4, 571.8), "type": "address", "street": "A", "num": 9, "bonus": false, "forks": []},
-	"A::10": {"pos": Vector2(589.6, 537.9), "type": "address", "street": "A", "num": 10, "bonus": false, "forks": []},
-	"A::11": {"pos": Vector2(478.4, 544.7), "type": "address", "street": "A", "num": 11, "bonus": false, "forks": []},
-	"A::12": {"pos": Vector2(589.6, 508.1), "type": "address", "street": "A", "num": 12, "bonus": false, "forks": []},
-	"A::13": {"pos": Vector2(478.4, 484.0), "type": "address", "street": "A", "num": 13, "bonus": false, "forks": []},
-	"A::14": {"pos": Vector2(589.6, 481.0), "type": "address", "street": "A", "num": 14, "bonus": false, "forks": []},
-	"B::1": {"pos": Vector2(239.8, 358.6), "type": "address", "street": "B", "num": 1, "bonus": false, "forks": []},
-	"B::2": {"pos": Vector2(240.7, 439.6), "type": "address", "street": "B", "num": 2, "bonus": false, "forks": []},
-	"B::3": {"pos": Vector2(273.6, 358.6), "type": "address", "street": "B", "num": 3, "bonus": false, "forks": []},
-	"B::4": {"pos": Vector2(274.6, 439.6), "type": "address", "street": "B", "num": 4, "bonus": false, "forks": []},
-	"B::5": {"pos": Vector2(314.6, 358.6), "type": "address", "street": "B", "num": 5, "bonus": false, "forks": []},
-	"B::6": {"pos": Vector2(315.6, 439.6), "type": "address", "street": "B", "num": 6, "bonus": false, "forks": []},
-	"B::7": {"pos": Vector2(351.9, 358.6), "type": "address", "street": "B", "num": 7, "bonus": false, "forks": []},
-	"B::8": {"pos": Vector2(352.9, 439.6), "type": "address", "street": "B", "num": 8, "bonus": false, "forks": []},
-	"B::9": {"pos": Vector2(392.9, 358.6), "type": "address", "street": "B", "num": 9, "bonus": false, "forks": []},
-	"B::10": {"pos": Vector2(395.9, 439.6), "type": "address", "street": "B", "num": 10, "bonus": false, "forks": []},
-	"B::11": {"pos": Vector2(446.9, 358.6), "type": "address", "street": "B", "num": 11, "bonus": false, "forks": []},
-	"B::12": {"pos": Vector2(447.1, 440.1), "type": "address", "street": "B", "num": 12, "bonus": false, "forks": []},
-	"B::13": {"pos": Vector2(616.1, 363.3), "type": "address", "street": "B", "num": 13, "bonus": false, "forks": []},
-	"B::14": {"pos": Vector2(659.0, 363.4), "type": "address", "street": "B", "num": 14, "bonus": false, "forks": []},
-	"B::15": {"pos": Vector2(696.3, 363.3), "type": "address", "street": "B", "num": 15, "bonus": false, "forks": []},
-	"B::16": {"pos": Vector2(678.8, 440.9), "type": "address", "street": "B", "num": 16, "bonus": false, "forks": []},
-	"B::17": {"pos": Vector2(736.0, 363.4), "type": "address", "street": "B", "num": 17, "bonus": false, "forks": []},
-	"B::18": {"pos": Vector2(721.5, 440.9), "type": "address", "street": "B", "num": 18, "bonus": false, "forks": []},
-	"B::19": {"pos": Vector2(784.2, 363.4), "type": "address", "street": "B", "num": 19, "bonus": false, "forks": []},
-	"B::20": {"pos": Vector2(779.9, 440.9), "type": "address", "street": "B", "num": 20, "bonus": false, "forks": []},
-	"C::1": {"pos": Vector2(491.2, 330.8), "type": "address", "street": "C", "num": 1, "bonus": false, "forks": []},
-	"C::2": {"pos": Vector2(588.4, 334.8), "type": "address", "street": "C", "num": 2, "bonus": false, "forks": []},
-	"C::3": {"pos": Vector2(499.3, 305.4), "type": "address", "street": "C", "num": 3, "bonus": false, "forks": []},
-	"C::4": {"pos": Vector2(596.5, 308.9), "type": "address", "street": "C", "num": 4, "bonus": false, "forks": []},
-	"C::5": {"pos": Vector2(507.8, 278.5), "type": "address", "street": "C", "num": 5, "bonus": false, "forks": []},
-	"C::6": {"pos": Vector2(615.0, 248.8), "type": "address", "street": "C", "num": 6, "bonus": false, "forks": []},
-	"C::7": {"pos": Vector2(523.5, 228.4), "type": "address", "street": "C", "num": 7, "bonus": false, "forks": []},
-	"C::8": {"pos": Vector2(630.3, 200.4), "type": "address", "street": "C", "num": 8, "bonus": false, "forks": []},
-	"C::9": {"pos": Vector2(572.5, 80.0), "type": "address", "street": "C", "num": 9, "bonus": false, "forks": []},
-	"C::10": {"pos": Vector2(651.5, 124.0), "type": "address", "street": "C", "num": 10, "bonus": false, "forks": []},
-}
-
 ## PARCOURS — séquence ordonnée des labels définissant le chemin à parcourir.
-## Défini dans generate_scene.py > BOARD_CONFIGS (décision game-design).
 ## Le jeu se termine quand le joueur atteint ou dépasse le dernier label.
 const PARCOURS: Array[String] = [
 	"B::1",
@@ -101,6 +41,356 @@ const PARCOURS: Array[String] = [
 	"B::17",
 	"B::19",
 ]
+
+## BOARD_SETUP — source unifiée des données du board.
+## Générée depuis tmp/BOARDS_SETUP.json (boards_setup_json dans BOARD_CONFIGS).
+## Remplace les anciennes const BOARD_DATA et STREETS.
+## Structure : streets → rue → sidewalk → label → {type, pos, forks?}
+const BOARD_SETUP: Dictionary = {
+	"name": "Quartier Citadin",
+	"scene": "res://game_04.tscn",
+	"color": "#1c2b0e",
+	"parcours": ["B::1", "B::3", "B::5", "B::7", "B::9", "B::11", "&::2", "@::2", "&::3", "B::13", "B::15", "B::17", "B::19"],
+	"streets": {
+		"A": {
+			"name": "Alice",
+			"oden_sidewalk": {
+				"&::3": {
+					"type": "fork",
+					"pos": Vector2(583.1, 361.3),
+					"forks": ["C::1", "B::13", "A::13"],
+				},
+				"A::2": {
+					"type": "address",
+					"pos": Vector2(589.6, 684.9),
+				},
+				"A::4": {
+					"type": "address",
+					"pos": Vector2(589.6, 629.5),
+				},
+				"A::6": {
+					"type": "address",
+					"pos": Vector2(589.6, 602.3),
+				},
+				"A::8": {
+					"type": "address",
+					"pos": Vector2(589.6, 568.7),
+				},
+				"A::10": {
+					"type": "address",
+					"pos": Vector2(589.6, 537.9),
+				},
+				"A::12": {
+					"type": "address",
+					"pos": Vector2(589.6, 508.1),
+				},
+				"A::14": {
+					"type": "address",
+					"pos": Vector2(589.6, 481.0),
+				},
+				"&::4": {
+					"type": "fork",
+					"pos": Vector2(591.4, 442.1),
+					"forks": [],
+				},
+				"@::3": {
+					"type": "passage",
+					"pos": Vector2(592.9, 402.2),
+				},
+			},
+			"even_sidewalk": {
+				"&::2": {
+					"type": "fork",
+					"pos": Vector2(478.1, 357.3),
+					"forks": ["C::1", "B::13", "A::13"],
+				},
+				"A::1": {
+					"type": "address",
+					"pos": Vector2(478.4, 688.0),
+				},
+				"A::3": {
+					"type": "address",
+					"pos": Vector2(478.4, 660.8),
+				},
+				"A::5": {
+					"type": "address",
+					"pos": Vector2(478.4, 632.6),
+				},
+				"A::7": {
+					"type": "address",
+					"pos": Vector2(478.4, 605.6),
+				},
+				"A::9": {
+					"type": "address",
+					"pos": Vector2(478.4, 571.8),
+				},
+				"A::11": {
+					"type": "address",
+					"pos": Vector2(478.4, 544.7),
+				},
+				"A::13": {
+					"type": "address",
+					"pos": Vector2(478.4, 484.0),
+				},
+				"&::1": {
+					"type": "fork",
+					"pos": Vector2(478.5, 441.7),
+					"forks": ["C::1", "B::13", "A::13"],
+				},
+				"@::1": {
+					"type": "passage",
+					"pos": Vector2(478.2, 400.0),
+				},
+			},
+		},
+		"B": {
+			"name": "Barouch",
+			"even_sidewalk": {
+				"&::3": {
+					"type": "fork",
+					"pos": Vector2(583.1, 361.3),
+					"forks": ["C::1", "B::13", "A::13"],
+				},
+				"B::2": {
+					"type": "address",
+					"pos": Vector2(240.7, 439.6),
+				},
+				"B::4": {
+					"type": "address",
+					"pos": Vector2(274.6, 439.6),
+				},
+				"B::6": {
+					"type": "address",
+					"pos": Vector2(315.6, 439.6),
+				},
+				"B::8": {
+					"type": "address",
+					"pos": Vector2(352.9, 439.6),
+				},
+				"B::10": {
+					"type": "address",
+					"pos": Vector2(395.9, 439.6),
+				},
+				"B::12": {
+					"type": "address",
+					"pos": Vector2(447.1, 440.1),
+				},
+				"&::1": {
+					"type": "fork",
+					"pos": Vector2(478.5, 441.7),
+					"forks": ["C::1", "B::13", "A::13"],
+				},
+				"@::4": {
+					"type": "passage",
+					"pos": Vector2(534.9, 442.7),
+				},
+				"&::4": {
+					"type": "fork",
+					"pos": Vector2(591.4, 442.1),
+					"forks": [],
+				},
+				"B::14": {
+					"type": "address",
+					"pos": Vector2(623.2, 440.9),
+				},
+				"B::16": {
+					"type": "address",
+					"pos": Vector2(678.8, 440.9),
+				},
+				"B::18": {
+					"type": "address",
+					"pos": Vector2(721.5, 440.9),
+				},
+				"B::20": {
+					"type": "address",
+					"pos": Vector2(779.9, 440.9),
+				},
+			},
+			"oden_sidewalk": {
+				"&::2": {
+					"type": "fork",
+					"pos": Vector2(478.1, 357.3),
+					"forks": ["C::1", "B::13", "A::13"],
+				},
+				"B::1": {
+					"type": "address",
+					"pos": Vector2(239.8, 358.6),
+				},
+				"B::3": {
+					"type": "address",
+					"pos": Vector2(273.6, 358.6),
+				},
+				"B::5": {
+					"type": "address",
+					"pos": Vector2(314.6, 358.6),
+				},
+				"B::7": {
+					"type": "address",
+					"pos": Vector2(351.9, 358.6),
+				},
+				"B::9": {
+					"type": "address",
+					"pos": Vector2(392.9, 358.6),
+				},
+				"B::11": {
+					"type": "address",
+					"pos": Vector2(446.9, 358.6),
+				},
+				"&::2b": {
+					"type": "fork",
+					"pos": Vector2(478.1, 357.3),
+					"forks": ["C::1", "B::13", "A::13"],
+				},
+				"@::2": {
+					"type": "passage",
+					"pos": Vector2(531.6, 362.3),
+				},
+				"&::3": {
+					"type": "fork",
+					"pos": Vector2(583.1, 361.3),
+					"forks": ["C::1", "B::13", "A::13"],
+				},
+				"B::13": {
+					"type": "address",
+					"pos": Vector2(616.1, 363.3),
+				},
+				"B::15": {
+					"type": "address",
+					"pos": Vector2(696.3, 363.3),
+				},
+				"B::17": {
+					"type": "address",
+					"pos": Vector2(736.0, 363.4),
+				},
+				"B::19": {
+					"type": "address",
+					"pos": Vector2(784.2, 363.4),
+				},
+			},
+		},
+		"C": {
+			"name": "Caulaincourt",
+			"even_sidewalk": {
+				"&::3": {
+					"type": "fork",
+					"pos": Vector2(583.1, 361.3),
+					"forks": ["C::1", "B::13", "A::13"],
+				},
+				"C::2": {
+					"type": "address",
+					"pos": Vector2(588.4, 334.8),
+				},
+				"C::4": {
+					"type": "address",
+					"pos": Vector2(596.5, 308.9),
+				},
+				"C::6": {
+					"type": "address",
+					"pos": Vector2(615.0, 248.8),
+				},
+				"C::8": {
+					"type": "address",
+					"pos": Vector2(630.3, 200.4),
+				},
+				"C::10": {
+					"type": "address",
+					"pos": Vector2(651.5, 124.0),
+				},
+				"C::12": {
+					"type": "address",
+					"pos": Vector2.ZERO,
+				},
+				"C::14": {
+					"type": "address",
+					"pos": Vector2.ZERO,
+				},
+				"&::4": {
+					"type": "fork",
+					"pos": Vector2(591.4, 442.1),
+					"forks": [],
+				},
+				"@::3": {
+					"type": "passage",
+					"pos": Vector2(592.9, 402.2),
+				},
+			},
+			"oden_sidewalk": {
+				"&::2": {
+					"type": "fork",
+					"pos": Vector2(478.1, 357.3),
+					"forks": ["C::1", "B::13", "A::13"],
+				},
+				"C::1": {
+					"type": "address",
+					"pos": Vector2(491.2, 330.8),
+				},
+				"C::3": {
+					"type": "address",
+					"pos": Vector2(499.3, 305.4),
+				},
+				"C::5": {
+					"type": "address",
+					"pos": Vector2(507.8, 278.5),
+				},
+				"C::7": {
+					"type": "address",
+					"pos": Vector2(523.5, 228.4),
+				},
+				"C::9": {
+					"type": "address",
+					"pos": Vector2(572.5, 80.0),
+				},
+				"C::11": {
+					"type": "address",
+					"pos": Vector2.ZERO,
+				},
+				"&::4": {
+					"type": "fork",
+					"pos": Vector2(591.4, 442.1),
+					"forks": [],
+				},
+				"@::3": {
+					"type": "passage",
+					"pos": Vector2(592.9, 402.2),
+				},
+				"C::13": {
+					"type": "address",
+					"pos": Vector2.ZERO,
+				},
+			},
+		},
+	},
+}
+
+## PLAYERS — état initial des joueurs (position de départ, domicile, couleur).
+## Source : players_json défini dans BOARD_CONFIGS.
+## game_urban.gd en fait une copie mutable (var players) mise à jour à chaque tour.
+const PLAYERS: Dictionary = {
+	"1": {
+		"name": "Danielle",
+		"color": "red",
+		"current_position": {
+			"street": "A",
+			"num": 1,
+			"direction": "up",
+			"address_fork": "",
+			"address_passage": "",
+		},
+		"home": "A::1",
+	},
+	"2": {
+		"name": "Pacha",
+		"color": "blue",
+		"current_position": {
+			"street": "B",
+			"num": 4,
+			"direction": "down",
+			"address_fork": "",
+			"address_passage": "",
+		},
+		"home": "B::4",
+	},
+}
 
 const SHAPES := [
 	{"label": "&::1", "type": "rectangle", "cx": 478.5, "cy": 441.7},

@@ -1,0 +1,14 @@
+{
+    "1" : {
+        "name": "Danielle",
+        "color": "red",
+        "current_position": {"street": "A", "num": 1,"direction": "up", "address_fork":"", "address_passage":""},
+        "home":"A::1"
+    },
+    "2" : {
+        "name": "Pacha",
+        "color": "blue",
+        "current_position": {"street": "B", "num": 4,"direction": "down", "address_fork":"", "address_passage":""},
+        "home":"B::4"
+    }
+}
