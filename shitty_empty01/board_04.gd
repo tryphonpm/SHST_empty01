@@ -1,6 +1,7 @@
 ## Board 04 — généré depuis fond_04.md par generate_scene.py.
 ## NE PAS ÉDITER MANUELLEMENT.
-extends Node2D
+## BoardBase expose BOARD_SETUP dans l'inspecteur (inspector_streets).
+extends BoardBase
 
 const BOARD_TYPE  := "urban"
 const START_LABEL := "B::1"
@@ -45,7 +46,7 @@ const PARCOURS: Array[String] = [
 ## BOARD_SETUP — source unifiée des données du board.
 ## Générée depuis tmp/BOARDS_SETUP.json (boards_setup_json dans BOARD_CONFIGS).
 ## Remplace les anciennes const BOARD_DATA et STREETS.
-## Structure : streets → rue → sidewalk → label → {type, pos, forks?}
+## Structure : streets → rue → sidewalk → label → {type, pos, directions?}
 const BOARD_SETUP: Dictionary = {
 	"name": "Quartier Citadin",
 	"scene": "res://game_04.tscn",
@@ -55,11 +56,6 @@ const BOARD_SETUP: Dictionary = {
 		"A": {
 			"name": "Alice",
 			"oden_sidewalk": {
-				"&::3": {
-					"type": "fork",
-					"pos": Vector2(583.1, 361.3),
-					"forks": ["C::1", "B::13", "A::13"],
-				},
 				"A::2": {
 					"type": "address",
 					"pos": Vector2(589.6, 684.9),
@@ -91,7 +87,7 @@ const BOARD_SETUP: Dictionary = {
 				"&::4": {
 					"type": "fork",
 					"pos": Vector2(591.4, 442.1),
-					"forks": [],
+					"directions": [],
 				},
 				"@::3": {
 					"type": "passage",
@@ -102,7 +98,7 @@ const BOARD_SETUP: Dictionary = {
 				"&::2": {
 					"type": "fork",
 					"pos": Vector2(478.1, 357.3),
-					"forks": ["C::1", "B::13", "A::13"],
+					"directions": ["C::1", "B::13", "A::13"],
 				},
 				"A::1": {
 					"type": "address",
@@ -135,7 +131,7 @@ const BOARD_SETUP: Dictionary = {
 				"&::1": {
 					"type": "fork",
 					"pos": Vector2(478.5, 441.7),
-					"forks": ["C::1", "B::13", "A::13"],
+					"directions": ["C::1", "B::13", "A::13"],
 				},
 				"@::1": {
 					"type": "passage",
@@ -146,11 +142,6 @@ const BOARD_SETUP: Dictionary = {
 		"B": {
 			"name": "Barouch",
 			"even_sidewalk": {
-				"&::3": {
-					"type": "fork",
-					"pos": Vector2(583.1, 361.3),
-					"forks": ["C::1", "B::13", "A::13"],
-				},
 				"B::2": {
 					"type": "address",
 					"pos": Vector2(240.7, 439.6),
@@ -178,7 +169,7 @@ const BOARD_SETUP: Dictionary = {
 				"&::1": {
 					"type": "fork",
 					"pos": Vector2(478.5, 441.7),
-					"forks": ["C::1", "B::13", "A::13"],
+					"directions": ["C::1", "B::13", "A::13"],
 				},
 				"@::4": {
 					"type": "passage",
@@ -187,7 +178,7 @@ const BOARD_SETUP: Dictionary = {
 				"&::4": {
 					"type": "fork",
 					"pos": Vector2(591.4, 442.1),
-					"forks": [],
+					"directions": [],
 				},
 				"B::14": {
 					"type": "address",
@@ -206,12 +197,7 @@ const BOARD_SETUP: Dictionary = {
 					"pos": Vector2(779.9, 440.9),
 				},
 			},
-			"oden_sidewalk": {
-				"&::2": {
-					"type": "fork",
-					"pos": Vector2(478.1, 357.3),
-					"forks": ["C::1", "B::13", "A::13"],
-				},
+			"odd_sidewalk": {
 				"B::1": {
 					"type": "address",
 					"pos": Vector2(239.8, 358.6),
@@ -236,10 +222,10 @@ const BOARD_SETUP: Dictionary = {
 					"type": "address",
 					"pos": Vector2(446.9, 358.6),
 				},
-				"&::2b": {
+				"&::2": {
 					"type": "fork",
 					"pos": Vector2(478.1, 357.3),
-					"forks": ["C::1", "B::13", "A::13"],
+					"directions": ["C::1", "B::13", "A::13"],
 				},
 				"@::2": {
 					"type": "passage",
@@ -248,7 +234,7 @@ const BOARD_SETUP: Dictionary = {
 				"&::3": {
 					"type": "fork",
 					"pos": Vector2(583.1, 361.3),
-					"forks": ["C::1", "B::13", "A::13"],
+					"directions": ["C::1", "B::13", "A::13"],
 				},
 				"B::13": {
 					"type": "address",
@@ -274,7 +260,7 @@ const BOARD_SETUP: Dictionary = {
 				"&::3": {
 					"type": "fork",
 					"pos": Vector2(583.1, 361.3),
-					"forks": ["C::1", "B::13", "A::13"],
+					"directions": ["C::1", "B::13", "A::13"],
 				},
 				"C::2": {
 					"type": "address",
@@ -296,29 +282,12 @@ const BOARD_SETUP: Dictionary = {
 					"type": "address",
 					"pos": Vector2(651.5, 124.0),
 				},
-				"C::12": {
-					"type": "address",
-					"pos": Vector2.ZERO,
-				},
-				"C::14": {
-					"type": "address",
-					"pos": Vector2.ZERO,
-				},
-				"&::4": {
-					"type": "fork",
-					"pos": Vector2(591.4, 442.1),
-					"forks": [],
-				},
-				"@::3": {
-					"type": "passage",
-					"pos": Vector2(592.9, 402.2),
-				},
 			},
 			"oden_sidewalk": {
 				"&::2": {
 					"type": "fork",
 					"pos": Vector2(478.1, 357.3),
-					"forks": ["C::1", "B::13", "A::13"],
+					"directions": ["C::1", "B::13", "A::13"],
 				},
 				"C::1": {
 					"type": "address",
@@ -339,23 +308,6 @@ const BOARD_SETUP: Dictionary = {
 				"C::9": {
 					"type": "address",
 					"pos": Vector2(572.5, 80.0),
-				},
-				"C::11": {
-					"type": "address",
-					"pos": Vector2.ZERO,
-				},
-				"&::4": {
-					"type": "fork",
-					"pos": Vector2(591.4, 442.1),
-					"forks": [],
-				},
-				"@::3": {
-					"type": "passage",
-					"pos": Vector2(592.9, 402.2),
-				},
-				"C::13": {
-					"type": "address",
-					"pos": Vector2.ZERO,
 				},
 			},
 		},

@@ -106,7 +106,7 @@ func _parcours() -> Array:
 	return board.get("PARCOURS") as Array
 
 ## Construit _label_cache depuis board.BOARD_SETUP["streets"].
-## Chaque label est indexé avec : type, pos, forks, street, num, bonus.
+## Chaque label est indexé avec : type, pos, directions, street, num, bonus.
 ## Les labels présents dans plusieurs sidewalks ne sont indexés qu'une fois.
 func _build_label_cache() -> void:
 	var setup: Dictionary = board.get("BOARD_SETUP") as Dictionary
@@ -125,8 +125,8 @@ func _build_label_cache() -> void:
 				raw["street"] = parts[0] if parts.size() > 0 else ""
 				raw["num"]    = int(parts[1]) if parts.size() > 1 and parts[1].is_valid_int() else 0
 				raw["bonus"]  = false
-				if not raw.has("forks"):
-					raw["forks"] = []
+				if not raw.has("directions"):
+					raw["directions"] = []
 				_label_cache[label] = raw
 
 ## Retourne le dict de données pour un label donné, ou {} si inconnu.
@@ -163,7 +163,7 @@ func _advance(steps: int) -> void:
 	#   (pas de téléport : la boucle ci-dessous prend le relais normalement).
 	# • Si la destination est hors-PARCOURS (vraie déviation) → _jump_to_label.
 	if _data(current_label).get("type", "") == "fork":
-		var fork_opts: Array = _data(current_label).get("forks", [])
+		var fork_opts: Array = _data(current_label).get("directions", [])
 		if fork_opts.size() > 0:
 			var chosen: String = await _show_fork_popup(fork_opts)
 			_update_player_direction(chosen)
@@ -194,7 +194,7 @@ func _advance(steps: int) -> void:
 		# → La case d'arrivée finale ne déclenche JAMAIS le fork.
 		# → Même règle que le DÉPART : téléport seulement si la destination est hors-PARCOURS.
 		if remaining > 0 and _data(current_label).get("type", "") == "fork":
-			var fork_opts: Array = _data(current_label).get("forks", [])
+			var fork_opts: Array = _data(current_label).get("directions", [])
 			if fork_opts.size() > 0:
 				var chosen: String = await _show_fork_popup(fork_opts)
 				_update_player_direction(chosen)
