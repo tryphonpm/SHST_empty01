@@ -3,21 +3,18 @@
 ## Expose la const BOARD_SETUP (définie dans la classe dérivée générée) sous
 ## forme de Resources BoardStreet / BoardEmplacement dans l'inspecteur Godot.
 ## Pendant la partie, l'onglet Remote de l'inspecteur affiche la hiérarchie
-## complète : streets → sidewalks → emplacements (label, type, pos, forks).
+## complète : streets → sidewalks → emplacements (label, type, pos, parcours).
 class_name BoardBase
 extends Node2D
 
 @export_group("Board Setup")
 ## Rues du board, peuplées depuis BOARD_SETUP à _ready().
-## Chaque entrée est une Resource BoardStreet développable dans l'inspecteur.
-## Non typée Array[BoardStreet] pour compatibilité linter cross-fichier Cursor.
+## Non typée Array[BoardStreet] pour compatibilité linter cross-fichier.
 @export var inspector_streets: Array = []
 
 func _ready() -> void:
 	_populate_inspector_data()
 
-## Construit inspector_streets depuis la const BOARD_SETUP de la classe dérivée.
-## Utilise self.get("BOARD_SETUP") pour accéder à la const de la sous-classe.
 func _populate_inspector_data() -> void:
 	inspector_streets.clear()
 	var raw_setup: Variant = self.get("BOARD_SETUP")
@@ -35,7 +32,7 @@ func _populate_inspector_data() -> void:
 		street_res.set("street_key",  sk)
 		street_res.set("street_name", sd.get("name", ""))
 
-		for sw_key: String in ["even_sidewalk", "oden_sidewalk", "odd_sidewalk"]:
+		for sw_key: String in ["even_sidewalk", "odd_sidewalk"]:
 			if not sd.has(sw_key):
 				continue
 			var sw: Dictionary = sd[sw_key] as Dictionary
@@ -48,12 +45,9 @@ func _populate_inspector_data() -> void:
 				empl.set("label", lbl)
 				empl.set("type",  entry.get("type", ""))
 				empl.set("pos",   entry.get("pos",  Vector2.ZERO))
-				var raw_dirs: Variant = entry.get("directions", [])
-				if raw_dirs is Array:
-					var dirs_arr: Array[String] = []
-					for f: Variant in raw_dirs:
-						dirs_arr.append(f as String)
-					empl.set("directions", dirs_arr)
+				var raw_p: Variant = entry.get("parcours", [])
+				if raw_p is Array:
+					empl.set("parcours", raw_p)
 				empl_list.append(empl)
 			street_res.set(sw_key, empl_list)
 

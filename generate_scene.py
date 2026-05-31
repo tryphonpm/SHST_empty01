@@ -473,14 +473,14 @@ def generate_board_gd_urban(cfg: dict, shapes: list, label_dict: dict,
         "\tqueue_redraw()",
     ]
 
-    # Bloc BOARD_SETUP — source unifiée (streets, sidewalks, positions, directions)
+    # Bloc BOARD_SETUP — source unifiée (streets, sidewalks, positions, parcours)
     if board_setup_data:
         lines += [
             "",
             "## BOARD_SETUP — source unifiée des données du board.",
             "## Générée depuis tmp/BOARDS_SETUP.json (boards_setup_json dans BOARD_CONFIGS).",
             "## Remplace les anciennes const BOARD_DATA et STREETS.",
-            "## Structure : streets → rue → sidewalk → label → {type, pos, directions?}",
+            "## Structure : streets → rue → sidewalk → label → {type, pos, parcours?}",
             f"const BOARD_SETUP: Dictionary = {_to_gd_board_setup(board_setup_data)}",
         ]
 

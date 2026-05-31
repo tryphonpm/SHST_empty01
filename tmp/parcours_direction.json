@@ -1,0 +1,18 @@
+[{
+    "visuel" :  "arrow_left.svg",
+    "street" : "C",
+    "sidewalk" : "odd",
+    "direction" : "up"
+},
+{
+    "visuel" :  "arrow_front",
+    "street" : "B",
+    "sidewalk" : "even",
+    "direction" : "up"
+},
+{
+    "visuel" :  "arrow_right.svg",
+    "street" : "A",
+    "sidewalk" : "odd",
+    "direction" : "down"
+}]

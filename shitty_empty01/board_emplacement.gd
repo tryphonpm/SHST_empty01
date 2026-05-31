@@ -6,4 +6,4 @@ extends Resource
 @export var label: String = ""
 @export var type:  String = ""
 @export var pos:   Vector2 = Vector2.ZERO
-@export var directions: Array[String] = []
+@export var parcours: Array = []

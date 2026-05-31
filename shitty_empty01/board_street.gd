@@ -7,5 +7,4 @@ extends Resource
 @export var street_name:   String = ""
 ## Emplacements (BoardEmplacement) — non typés pour compatibilité linter cross-fichier.
 @export var even_sidewalk: Array = []
-@export var oden_sidewalk: Array = []
 @export var odd_sidewalk:  Array = []

@@ -28,7 +28,7 @@ func set_shape_color(label: String, color: Color) -> void:
 ## BOARD_SETUP — source unifiée des données du board.
 ## Générée depuis tmp/BOARDS_SETUP.json (boards_setup_json dans BOARD_CONFIGS).
 ## Remplace les anciennes const BOARD_DATA et STREETS.
-## Structure : streets → rue → sidewalk → label → {type, pos, directions?}
+## Structure : streets → rue → sidewalk → label → {type, pos, parcours?}
 const BOARD_SETUP: Dictionary = {
 	"name": "Quartier Citadin",
 	"scene": "res://game_04.tscn",
@@ -69,7 +69,7 @@ const BOARD_SETUP: Dictionary = {
 				"&::4": {
 					"type": "fork",
 					"pos": Vector2(591.4, 442.1),
-					"directions": [],
+					"parcours": [],
 				},
 				"@::3": {
 					"type": "passage",
@@ -80,7 +80,22 @@ const BOARD_SETUP: Dictionary = {
 				"&::2": {
 					"type": "fork",
 					"pos": Vector2(478.1, 357.3),
-					"directions": ["C::1", "B::13", "A::13"],
+					"parcours": [{
+	"visuel": "arrow_left.svg",
+	"street": "B",
+	"sidewalk": "odd",
+	"direction": "up",
+}, {
+	"visuel": "arrow_front.svg",
+	"street": "A",
+	"sidewalk": "even",
+	"direction": "up",
+}, {
+	"visuel": "arrow_right.svg",
+	"street": "C",
+	"sidewalk": "odd",
+	"direction": "up",
+}],
 				},
 				"A::1": {
 					"type": "address",
@@ -113,7 +128,22 @@ const BOARD_SETUP: Dictionary = {
 				"&::1": {
 					"type": "fork",
 					"pos": Vector2(478.5, 441.7),
-					"directions": ["C::1", "B::13", "A::13"],
+					"parcours": [{
+	"visuel": "arrow_left.svg",
+	"street": "B",
+	"sidewalk": "even",
+	"direction": "down",
+}, {
+	"visuel": "arrow_front.svg",
+	"street": "A",
+	"sidewalk": "even",
+	"direction": "up",
+}, {
+	"visuel": "arrow_right.svg",
+	"street": "C",
+	"sidewalk": "odd",
+	"direction": "up",
+}],
 				},
 				"@::1": {
 					"type": "passage",
@@ -151,7 +181,22 @@ const BOARD_SETUP: Dictionary = {
 				"&::1": {
 					"type": "fork",
 					"pos": Vector2(478.5, 441.7),
-					"directions": ["C::1", "B::13", "A::13"],
+					"parcours": [{
+	"visuel": "arrow_left.svg",
+	"street": "C",
+	"sidewalk": "odd",
+	"direction": "up",
+}, {
+	"visuel": "arrow_front.svg",
+	"street": "B",
+	"sidewalk": "even",
+	"direction": "up",
+}, {
+	"visuel": "arrow_right.svg",
+	"street": "A",
+	"sidewalk": "odd",
+	"direction": "down",
+}],
 				},
 				"@::4": {
 					"type": "passage",
@@ -160,7 +205,7 @@ const BOARD_SETUP: Dictionary = {
 				"&::4": {
 					"type": "fork",
 					"pos": Vector2(591.4, 442.1),
-					"directions": [],
+					"parcours": [],
 				},
 				"B::14": {
 					"type": "address",
@@ -207,7 +252,22 @@ const BOARD_SETUP: Dictionary = {
 				"&::2": {
 					"type": "fork",
 					"pos": Vector2(478.1, 357.3),
-					"directions": ["C::1", "B::13", "A::13"],
+					"parcours": [{
+	"visuel": "arrow_left.svg",
+	"street": "C",
+	"sidewalk": "odd",
+	"direction": "up",
+}, {
+	"visuel": "arrow_front.svg",
+	"street": "B",
+	"sidewalk": "odd",
+	"direction": "up",
+}, {
+	"visuel": "arrow_right.svg",
+	"street": "A",
+	"sidewalk": "even",
+	"direction": "down",
+}],
 				},
 				"@::2": {
 					"type": "passage",
@@ -216,7 +276,22 @@ const BOARD_SETUP: Dictionary = {
 				"&::3": {
 					"type": "fork",
 					"pos": Vector2(583.1, 361.3),
-					"directions": ["C::1", "B::13", "A::13"],
+					"parcours": [{
+	"visuel": "arrow_left.svg",
+	"street": "C",
+	"sidewalk": "even",
+	"direction": "up",
+}, {
+	"visuel": "arrow_front.svg",
+	"street": "B",
+	"sidewalk": "odd",
+	"direction": "up",
+}, {
+	"visuel": "arrow_right.svg",
+	"street": "A",
+	"sidewalk": "odd",
+	"direction": "down",
+}],
 				},
 				"B::13": {
 					"type": "address",
@@ -239,10 +314,29 @@ const BOARD_SETUP: Dictionary = {
 		"C": {
 			"name": "Caulaincourt",
 			"even_sidewalk": {
+				"@::3": {
+					"type": "passage",
+					"pos": Vector2(592.9, 402.2),
+				},
 				"&::3": {
 					"type": "fork",
 					"pos": Vector2(583.1, 361.3),
-					"directions": ["C::1", "B::13", "A::13"],
+					"parcours": [{
+	"visuel": "arrow_left.svg",
+	"street": "B",
+	"sidewalk": "odd",
+	"direction": "up",
+}, {
+	"visuel": "arrow_front.svg",
+	"street": "C",
+	"sidewalk": "even",
+	"direction": "up",
+}, {
+	"visuel": "arrow_right.svg",
+	"street": "A",
+	"sidewalk": "odd",
+	"direction": "down",
+}],
 				},
 				"C::2": {
 					"type": "address",
@@ -266,10 +360,29 @@ const BOARD_SETUP: Dictionary = {
 				},
 			},
 			"odd_sidewalk": {
+				"@::1": {
+					"type": "passage",
+					"pos": Vector2(478.2, 400.0),
+				},
 				"&::2": {
 					"type": "fork",
 					"pos": Vector2(478.1, 357.3),
-					"directions": ["C::1", "B::13", "A::13"],
+					"parcours": [{
+	"visuel": "arrow_left.svg",
+	"street": "A",
+	"sidewalk": "even",
+	"direction": "down",
+}, {
+	"visuel": "arrow_front.svg",
+	"street": "C",
+	"sidewalk": "odd",
+	"direction": "up",
+}, {
+	"visuel": "arrow_right.svg",
+	"street": "B",
+	"sidewalk": "odd",
+	"direction": "up",
+}],
 				},
 				"C::1": {
 					"type": "address",
