@@ -471,23 +471,16 @@ def generate_board_gd_urban(cfg: dict, shapes: list, label_dict: dict,
         "func set_shape_color(label: String, color: Color) -> void:",
         "\tshape_colors[label] = color",
         "\tqueue_redraw()",
-        "",
-        "## PARCOURS — séquence ordonnée des labels définissant le chemin à parcourir.",
-        "## Le jeu se termine quand le joueur atteint ou dépasse le dernier label.",
-        "const PARCOURS: Array[String] = [",
     ]
-    for lbl in parcours:
-        lines.append(f'\t"{lbl}",')
-    lines.append("]")
 
-    # Bloc BOARD_SETUP — source unifiée (streets, sidewalks, positions, forks)
+    # Bloc BOARD_SETUP — source unifiée (streets, sidewalks, positions, directions)
     if board_setup_data:
         lines += [
             "",
             "## BOARD_SETUP — source unifiée des données du board.",
             "## Générée depuis tmp/BOARDS_SETUP.json (boards_setup_json dans BOARD_CONFIGS).",
             "## Remplace les anciennes const BOARD_DATA et STREETS.",
-            "## Structure : streets → rue → sidewalk → label → {type, pos, forks?}",
+            "## Structure : streets → rue → sidewalk → label → {type, pos, directions?}",
             f"const BOARD_SETUP: Dictionary = {_to_gd_board_setup(board_setup_data)}",
         ]
 

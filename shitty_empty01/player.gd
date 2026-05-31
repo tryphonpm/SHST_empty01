@@ -15,6 +15,7 @@ extends Node2D
 
 @export_group("Position courante")
 @export var pos_street:           String = ""
+@export var pos_sidewalk:         String = ""
 @export var pos_num:              int    = 0
 @export var pos_direction:        String = ""
 @export var pos_address_fork:     String = ""
@@ -29,6 +30,7 @@ func sync_from_dict(pid: String, data: Dictionary) -> void:
 	home         = data.get("home",  "")
 	var cp: Dictionary = data.get("current_position", {})
 	pos_street          = str(cp.get("street",           ""))
+	pos_sidewalk        = str(cp.get("sidewalk",         ""))
 	pos_num             = int(cp.get("num",              0))
 	pos_direction       = str(cp.get("direction",        ""))
 	pos_address_fork    = str(cp.get("address_fork",     ""))

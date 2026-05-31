@@ -1,8 +1,8 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://ds12wotb0wm0y"]
 
-[ext_resource type="Script" path="res://board_04.gd" id="1_board"]
-[ext_resource type="Script" path="res://game_urban.gd" id="2_game"]
-[ext_resource type="Script" path="res://player.gd" id="3_player"]
+[ext_resource type="Script" uid="uid://b4kn0o8cjnxlc" path="res://board_04.gd" id="1_board"]
+[ext_resource type="Script" uid="uid://ddx5l6jg4ppst" path="res://game_urban.gd" id="2_game"]
+[ext_resource type="Script" uid="uid://c573qldh7n1qy" path="res://player.gd" id="3_player"]
 
 [node name="Game04" type="Node2D"]
 script = ExtResource("2_game")
@@ -27,7 +27,8 @@ offset_right = 480.0
 offset_bottom = 70.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 20
-text = "Adresse : B::1  (1/13)\nLance le dé (1 à 3) pour avancer."
+text = "Adresse : B::1  (1/13)
+Lance le dé (1 à 3) pour avancer."
 
 [node name="DiceLabel" type="Label" parent="UI"]
 offset_left = 16.0
@@ -60,8 +61,7 @@ offset_right = 662.0
 offset_bottom = 484.0
 
 [node name="BonusLabel" type="Label" parent="UI/BonusPopup"]
-anchor_left = 0.0
-anchor_top = 0.0
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_colors/font_color = Color(1, 0.84, 0, 1)
@@ -78,8 +78,7 @@ offset_right = 712.0
 offset_bottom = 514.0
 
 [node name="VBox" type="VBoxContainer" parent="UI/ForkPopup"]
-anchor_left = 0.0
-anchor_top = 0.0
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 16.0

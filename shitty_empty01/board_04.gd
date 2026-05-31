@@ -25,24 +25,6 @@ func set_shape_color(label: String, color: Color) -> void:
 	shape_colors[label] = color
 	queue_redraw()
 
-## PARCOURS — séquence ordonnée des labels définissant le chemin à parcourir.
-## Le jeu se termine quand le joueur atteint ou dépasse le dernier label.
-const PARCOURS: Array[String] = [
-	"B::1",
-	"B::3",
-	"B::5",
-	"B::7",
-	"B::9",
-	"B::11",
-	"&::2",
-	"@::2",
-	"&::3",
-	"B::13",
-	"B::15",
-	"B::17",
-	"B::19",
-]
-
 ## BOARD_SETUP — source unifiée des données du board.
 ## Générée depuis tmp/BOARDS_SETUP.json (boards_setup_json dans BOARD_CONFIGS).
 ## Remplace les anciennes const BOARD_DATA et STREETS.
@@ -55,7 +37,7 @@ const BOARD_SETUP: Dictionary = {
 	"streets": {
 		"A": {
 			"name": "Alice",
-			"oden_sidewalk": {
+			"odd_sidewalk": {
 				"A::2": {
 					"type": "address",
 					"pos": Vector2(589.6, 684.9),
@@ -283,7 +265,7 @@ const BOARD_SETUP: Dictionary = {
 					"pos": Vector2(651.5, 124.0),
 				},
 			},
-			"oden_sidewalk": {
+			"odd_sidewalk": {
 				"&::2": {
 					"type": "fork",
 					"pos": Vector2(478.1, 357.3),
@@ -323,6 +305,7 @@ const PLAYERS: Dictionary = {
 		"color": "red",
 		"current_position": {
 			"street": "A",
+			"sidewalk": "even",
 			"num": 1,
 			"direction": "up",
 			"address_fork": "",
@@ -335,8 +318,9 @@ const PLAYERS: Dictionary = {
 		"color": "blue",
 		"current_position": {
 			"street": "B",
+			"sidewalk": "even",
 			"num": 4,
-			"direction": "down",
+			"direction": "up",
 			"address_fork": "",
 			"address_passage": "",
 		},
